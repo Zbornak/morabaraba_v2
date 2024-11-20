@@ -1,14 +1,36 @@
+# 0. (0,0),               (0,3),               (0,6)
+# 1.        (1,1),        (1,3),        (1,5)
+# 2.               (2,2), (2,3), (2,4)
+# 3. (3,0), (3,1), (3,2),        (3,4), (3,5), (3,6)
+# 4.               (4,2), (4,3), (4,4)
+# 5.        (5,1),        (5,3),        (5,5)
+# 6. (6,0),               (6,3),               (6,6)
+
 from board import MorabarabaBoard
 
+# 0 is unusable
+# 1 is unowned
+# 2 is player 1
+# 3 is player 2
+
 fn main():
-    var board = MorabarabaBoard()
-    board.print_board()
-
-    _ = board.place_piece(0, 0, 2, 3)
-    _ = board.place_piece(0, 3, 2, 3)
-    _ = board.place_piece(0, 6, 2, 3)
+    var game = MorabarabaBoard()
     
-    _ = board.place_piece(3, 0, 3, 2)
-    _ = board.place_piece(6, 0, 3, 2)
-
-    board.print_board()
+    print("Initial board:")
+    game.print_board()
+    
+    print("\nPlacing pieces for player 2 to form a mill:")
+    _ = game.place_piece(0, 0, 2, 3)
+    _ = game.place_piece(0, 3, 2, 3)
+    game.print_board()
+    
+    print("\nPlacing an opponent piece:")
+    _ = game.place_piece(1, 1, 3, 2)
+    game.print_board()
+    
+    print("\nCompleting the mill for player 2:")
+    _ = game.place_piece(0, 6, 2, 3)
+    game.print_board()
+    
+    print("\nFinal board state:")
+    _ = game.print_board()
