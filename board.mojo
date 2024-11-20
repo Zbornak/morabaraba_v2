@@ -67,30 +67,30 @@ struct MorabarabaBoard:
     # 1 is unowned
     # 2 is player 1
     # 3 is player 2
-    fn place_piece(inout self, row: Int, col: Int, player: Int, opponent: Int) -> Bool:
+    fn place_cow(inout self, row: Int, col: Int, player: Int, opponent: Int) -> Bool:
         if self.is_valid_position(row, col) and self.board[row][col] != player and self.board[row][col] != opponent:
             self.board[row][col] = player
             if self.is_in_mill(row, col, player):  # Check if the current player formed a mill
-                print("Player", player, "got a mill")
+                print("player", player, "got a mill")
                 try:
-                    _ = self.remove_opponent_piece(player)
+                    _ = self.remove_opponent_cow(player)
                 except:
-                    print("unable to remove opponent piece")
+                    print("unable to shoot opponent cow")
             return True
         return False
 
-    fn remove_opponent_piece(inout self, player: Int) raises -> Bool:
+    fn remove_opponent_cow(inout self, player: Int) raises -> Bool:
         var opponent = 3 if player == 2 else 2  # Assuming player 2 and 3
         
-        print("Player ", player, ", choose an opponent's piece to remove.")
-        print("Enter the row and column (0-6) separated by a space:")
+        print("player ", player, ", choose an opponent's cow to shoot.")
+        print("enter the row and column (0-6) separated by a space:")
         
         while True:
             var input_str = self.get_input()
             var input_parts = input_str.split()
             
             if len(input_parts) != 2:
-                print("Invalid input. Please enter two numbers separated by a space.")
+                print("invalid input. please enter two numbers separated by a space.")
                 continue
             
             var row: Int
@@ -99,34 +99,35 @@ struct MorabarabaBoard:
                 row = atol(input_parts[0])
                 col = atol(input_parts[1])
             except:
-                print("Invalid input. Please enter valid numbers.")
+                print("invalid input. please enter valid numbers.")
                 continue
             
             if row < 0 or row > 6 or col < 0 or col > 6:
-                print("Invalid position. Row and column must be between 0 and 6.")
+                print("invalid position. row and column must be between 0 and 6.")
                 continue
             
             if self.board[row][col] != opponent:
-                print("Invalid position. There is no opponent piece at this location.")
+                print("invalid position. there is no opponent cow at this location.")
                 continue
             
             if self.is_in_mill(row, col, opponent):
-                print("This piece is part of a mill and cannot be removed. Choose another piece.")
+                print("this cow is part of a mill and cannot be shot. choose another piece.")
                 continue
             
             self.board[row][col] = 1  # Set back to empty valid position
-            print("Removed opponent's piece at row ", row, ", col ", col)
+            print("shot opponent's cow at row ", row, ", col ", col)
             return True
 
     fn print_board(self):
         for row in range(7):
             for col in range(7):
                 if self.board[row][col] == 1:
-                    print("O ", end="")
+                    print(" O  ", end="")
                 elif self.board[row][col] == 2:
-                    print("⑁⚇", end="")
+                    print(" ⑁⚇ ", end="")
                 elif self.board[row][col] == 3:
-                    print("⑁⚉", end="")
+                    print(" ⑁⚉ ", end="")
                 else:
-                    print(". ", end="")
+                    print(" .  ", end="")
+            print()
             print()
