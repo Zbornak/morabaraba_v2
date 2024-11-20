@@ -20,16 +20,16 @@ fn main():
     game.print_board()
     
     print("\nPlacing pieces for player 2 to form a mill:")
-    _ = game.place_piece(0, 0, 2, 3)
-    _ = game.place_piece(0, 3, 2, 3)
+    _ = game.place_cow(0, 0, 2, 3)
+    _ = game.place_cow(0, 3, 2, 3)
     game.print_board()
     
     print("\nPlacing an opponent piece:")
-    _ = game.place_piece(1, 1, 3, 2)
+    _ = game.place_cow(1, 1, 3, 2)
     game.print_board()
     
     print("\nCompleting the mill for player 2:")
-    _ = game.place_piece(0, 6, 2, 3)
+    _ = game.place_cow(0, 6, 2, 3)
     game.print_board()
     
     print("\nFinal board state:")

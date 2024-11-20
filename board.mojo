@@ -73,13 +73,13 @@ struct MorabarabaBoard:
             if self.is_in_mill(row, col, player):  # Check if the current player formed a mill
                 print("player", player, "got a mill")
                 try:
-                    _ = self.remove_opponent_cow(player)
+                    _ = self.shoot_opponent_cow(player)
                 except:
                     print("unable to shoot opponent cow")
             return True
         return False
 
-    fn remove_opponent_cow(inout self, player: Int) raises -> Bool:
+    fn shoot_opponent_cow(inout self, player: Int) raises -> Bool:
         var opponent = 3 if player == 2 else 2  # Assuming player 2 and 3
         
         print("player ", player, ", choose an opponent's cow to shoot.")
@@ -114,7 +114,7 @@ struct MorabarabaBoard:
                 print("this cow is part of a mill and cannot be shot. choose another piece.")
                 continue
             
-            self.board[row][col] = 1  # Set back to empty valid position
+            self.board[row][col] = 1
             print("shot opponent's cow at row ", row, ", col ", col)
             return True
 
