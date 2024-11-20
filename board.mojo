@@ -8,6 +8,7 @@
 
 from utils import StaticTuple
 from utils import StaticIntTuple
+from python import Python
 
 struct MorabarabaBoard:
     var board: StaticTuple[StaticTuple[Int, 7], 7]
@@ -22,6 +23,9 @@ struct MorabarabaBoard:
             StaticTuple[Int, 7](0, 1, 0, 1, 0, 1, 0),
             StaticTuple[Int, 7](1, 0, 0, 1, 0, 0, 1)
         )
+
+    fn get_input(self) raises -> String:
+       return str(Python.evaluate("input()"))
 
     # returns true if player picks a valid position, false if not
     fn is_valid_position(self, row: Int, col: Int) -> Bool:
@@ -68,18 +72,21 @@ struct MorabarabaBoard:
             self.board[row][col] = player
             if self.is_in_mill(row, col, player):  # Check if the current player formed a mill
                 print("Player", player, "got a mill")
-                _ = self.remove_opponent_piece(player)
+                try:
+                    _ = self.remove_opponent_piece(player)
+                except:
+                    print("unable to remove opponent piece")
             return True
         return False
 
-    fn remove_opponent_piece(inout self, player: Int) -> Bool:
+    fn remove_opponent_piece(inout self, player: Int) raises -> Bool:
         var opponent = 3 if player == 2 else 2  # Assuming player 2 and 3
         
         print("Player ", player, ", choose an opponent's piece to remove.")
         print("Enter the row and column (0-6) separated by a space:")
         
         while True:
-            var input_str = input()
+            var input_str = self.get_input()
             var input_parts = input_str.split()
             
             if len(input_parts) != 2:
