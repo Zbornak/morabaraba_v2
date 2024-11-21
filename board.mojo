@@ -33,11 +33,11 @@ struct MorabarabaBoard:
             input_str = input_str.lower()
             
             if input_str == "exit":
-                print("Exiting the game. Thanks for playing!")
+                print("exiting the game, hamba kahle")
                 exit(0)
             elif input_str == "rules":
                 print_rules()
-                print("Please enter your move:")
+                print("enter your move:")
             else:
                 return input_str
 
