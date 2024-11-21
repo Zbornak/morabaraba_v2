@@ -84,15 +84,15 @@ struct MorabarabaBoard:
     fn place_cow(inout self, player: Int) raises -> Bool:
         var opponent = 3 if player == 2 else 2  # assuming player 2 and 3
         
-        print("Player ", player, ", choose where to place your piece.")
-        print("Enter the row and column (0-6) separated by a space:")
+        print("player ", player, ", choose where to place your cow.")
+        print("enter the row and column (0-6) separated by a space:")
 
         while True:
             var input_str = self.get_input()
             var input_parts = input_str.split()
             
             if len(input_parts) != 2:
-                print("Invalid input. Please enter two numbers separated by a space.")
+                print("invalid input. please enter two numbers separated by a space.")
                 continue
             
             var row: Int
@@ -101,20 +101,20 @@ struct MorabarabaBoard:
                 row = atol(input_parts[0])
                 col = atol(input_parts[1])
             except:
-                print("Invalid input. Please enter valid numbers.")
+                print("invalid input. please enter valid numbers.")
                 continue
 
             if self.is_valid_position(row, col) and self.board[row][col] != player and self.board[row][col] != opponent:
                 self.board[row][col] = player
                 if self.is_in_mill(row, col, player):
-                    print("Player", player, "got a mill")
+                    print("player", player, "got a mill")
                     try:
                         _ = self.shoot_opponent_cow(player)
                     except:
-                        print("Unable to remove opponent piece")
+                        print("unable to shoot opponent cow")
                 return True
             else:
-                print("Invalid position. Please choose an empty, valid position.")
+                print("invalid position. please choose an empty, valid position.")
         
         #return False
 
