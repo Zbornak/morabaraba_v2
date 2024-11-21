@@ -21,18 +21,14 @@ fn main() raises:
     print("Initial board:")
     game.print_board()
     
-    print("\nPlacing pieces for player 2 to form a mill:")
-    _ = game.place_cow(2)
+    print("\nPlacing cow for player 2:")
     _ = game.place_cow(2)
     game.print_board()
-    
-    print("\nPlacing an opponent piece:")
+
+    print("\nPlacing cow for player 3:")
     _ = game.place_cow(3)
     game.print_board()
     
-    print("\nCompleting the mill for player 2:")
-    _ = game.place_cow(2)
-    game.print_board()
-    
-    print("\nFinal board state:")
+    print("\nMoving cow for player 2:")
+    _ = game.move_cow(2)
     game.print_board()

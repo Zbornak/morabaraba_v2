@@ -118,42 +118,77 @@ struct MorabarabaBoard:
         
         #return False
 
-    fn move_cow(inout self, from_row: Int, from_col: Int, to_row: Int, to_col: Int, player: Int, opponent: Int) raises -> Bool:
-        # check if the 'from' position contains the player's piece
-        if self.board[from_row][from_col] != player:
-            print("Invalid move: No piece at the starting position")
-            return False
-        
-        # check if the 'to' position is empty
-        if self.board[to_row][to_col] != 1:  # assuming 1 represents an empty position
-            print("Invalid move: Destination is not empty")
-            return False
-        
-        # check if the move is to an adjacent position
-        if not self.is_adjacent(from_row, from_col, to_row, to_col):
-            print("Invalid move: Can only move to adjacent positions")
-            return False
-        
-        # perform the move
-        self.board[to_row][to_col] = player
-        self.board[from_row][from_col] = 1  # set the 'from' position to empty
-        
-        # check if the move formed a mill
-        if self.is_in_mill(to_row, to_col, player): # check if the current player formed a mill
-            print("player", player, "got a mill")
+    fn move_cow(inout self, player: Int) raises -> Bool:
+        #var opponent = 3 if player == 2 else 2  # assuming player 2 and 3
+
+        print("player ", player, ", choose a cow to move.")
+        print("enter the current row and column (0-6) of your cow, then the destination row and column, all separated by spaces:")
+
+        while True:
+            var input_str = self.get_input()
+            var input_parts = input_str.split()
+
+            if len(input_parts) != 4:
+                print("invalid input. Please enter four numbers separated by spaces.")
+                continue
+
+            var from_row: Int
+            var from_col: Int
+            var to_row: Int
+            var to_col: Int
             try:
-                _ = self.shoot_opponent_cow(player)
+                from_row = atol(input_parts[0])
+                from_col = atol(input_parts[1])
+                to_row = atol(input_parts[2])
+                to_col = atol(input_parts[3])
             except:
-                print("unable to shoot opponent cow")
-        
-        return True
+                print("Invalid input. Please enter valid numbers.")
+                continue
+            if self.board[from_row][from_col] != player:
+                print("Invalid move: no piece at the starting position")
+                continue
+
+            if self.board[to_row][to_col] != 1:  # assuming 1 represents an empty position
+                print("invalid move: destination is not valid")
+                continue
+
+            if not self.is_adjacent(from_row, from_col, to_row, to_col):
+                print("Invalid move: Can only move to adjacent positions")
+                continue
+
+            self.board[to_row][to_col] = player
+            self.board[from_row][from_col] = 1  # set the 'from' position to empty
+
+            if self.is_in_mill(to_row, to_col, player):
+                print("Player", player, "formed a mill!")
+                try:
+                    _ = self.shoot_opponent_cow(player)
+                except:
+                    print("Unable to remove opponent piece")
+
+            return True
+
+        #return False
 
     fn is_adjacent(self, row1: Int, col1: Int, row2: Int, col2: Int) -> Bool:
-        # check if two positions are adjacent on the board
+        # Check if the positions are the same
+        if row1 == row2 and col1 == col2:
+            return False
+
+        # Check for corner to corner moves
+        if (row1 == 0 or row1 == 6) and (col1 == 0 or col1 == 6):
+            return abs(row1 - row2) == 1 and abs(col1 - col2) == 1
+
+        # Check for moves along the same line
         if row1 == row2:
-            return abs(col1 - col2) == 3 or (abs(col1 - col2) == 1 and (row1 % 3 != 1 or col1 % 3 == 1))
-        elif col1 == col2:
-            return abs(row1 - row2) == 3 or (abs(row1 - row2) == 1 and (col1 % 3 != 1 or row1 % 3 == 1))
+            return abs(col1 - col2) == 3 or (abs(col1 - col2) == 1 and (row1 % 3 == 0 or col1 % 3 == 1))
+        if col1 == col2:
+            return abs(row1 - row2) == 3 or (abs(row1 - row2) == 1 and (col1 % 3 == 0 or row1 % 3 == 1))
+            
+        # Check for diagonal moves in the middle square
+        if (row1 == 3 and col1 == 3) or (row2 == 3 and col2 == 3):
+            return abs(row1 - row2) == 1 and abs(col1 - col2) == 1
+
         return False
 
     fn shoot_opponent_cow(inout self, player: Int) raises -> Bool:
