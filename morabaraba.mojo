@@ -13,7 +13,7 @@ from board import MorabarabaBoard
 # 2 is player 1
 # 3 is player 2
 
-fn main():
+fn main() raises:
     var game = MorabarabaBoard()
     
     print("Initial board:")
@@ -33,4 +33,4 @@ fn main():
     game.print_board()
     
     print("\nFinal board state:")
-    _ = game.print_board()
+    game.print_board()
