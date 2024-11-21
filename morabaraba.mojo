@@ -7,13 +7,15 @@
 # 6. (6,0),               (6,3),               (6,6)
 
 from board import MorabarabaBoard
+from intro import print_intro
 
-# 0 is unusable
+# 0 is invalid
 # 1 is unowned
 # 2 is player 1
 # 3 is player 2
 
 fn main() raises:
+    print_intro()
     var game = MorabarabaBoard()
     
     print("Initial board:")
