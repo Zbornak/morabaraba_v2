@@ -20,6 +20,7 @@ fn play_game(inout game: MorabarabaBoard) raises:
     var current_player = 2  # Start with player 2
     while True:
         print("player ", current_player, "'s turn")
+
         if not game.has_valid_moves(current_player):
             print("player ", current_player, " has no valid moves and loses the game")
             break
@@ -34,21 +35,34 @@ fn play_game(inout game: MorabarabaBoard) raises:
         
         if check_win_condition(game):
             break
+
+        # check for draw condition
+        if game.count_player_cows(2) <= 3 and game.count_player_cows(3) <= 3:
+            game.three_cow_phase = True
+        
+        if game.three_cow_phase:
+            game.moves_since_last_shot += 1
+            if game.moves_since_last_shot >= 10:
+                print("draw, neither player has shot a cow in 10 moves")
+                break
         
         current_player = 3 if current_player == 2 else 2
 
 fn check_win_condition(inout game: MorabarabaBoard) -> Bool:
     if game.count_player_cows(2) < 3:
-        print("Player 3 wins! Player 2 has fewer than 3 pieces.")
+        print("player 3 wins. player 2 has fewer than 3 cows")
         return True
     elif game.count_player_cows(3) < 3:
-        print("Player 2 wins! Player 3 has fewer than 3 pieces.")
+        print("player 2 wins. player 3 has fewer than 3 cows")
         return True
     elif not game.has_valid_moves(2):
-        print("Player 3 wins! Player 2 has no valid moves.")
+        print("player 3 wins. player 2 has no valid moves")
         return True
     elif not game.has_valid_moves(3):
-        print("Player 2 wins! Player 3 has no valid moves.")
+        print("player 2 wins. player 3 has no valid moves")
+        return True
+    elif game.three_cow_phase and game.moves_since_last_shot >= 10:
+        print("draw, neither player has shot a cow in 10 moves")
         return True
     return False
 

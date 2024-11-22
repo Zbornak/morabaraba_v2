@@ -14,6 +14,8 @@ from rules import print_rules
 
 struct MorabarabaBoard:
     var board: StaticTuple[StaticTuple[Int, 7], 7]
+    var moves_since_last_shot: Int
+    var three_cow_phase: Bool
 
     fn __init__(inout self):
         self.board = StaticTuple[StaticTuple[Int, 7], 7](
@@ -25,6 +27,8 @@ struct MorabarabaBoard:
             StaticTuple[Int, 7](0, 1, 0, 1, 0, 1, 0),
             StaticTuple[Int, 7](1, 0, 0, 1, 0, 0, 1)
         )
+        self.moves_since_last_shot = 0
+        self.three_cow_phase = False
 
     # get user input (mojo input not currently working 211104)
     fn get_input(self) raises -> String:
@@ -312,7 +316,8 @@ struct MorabarabaBoard:
                 continue
             
             self.board[row][col] = 1
-            print("shot opponent's cow at row ", row, ", col ", col)
+            print("Shot opponent's cow at row ", row, ", col ", col)
+            self.moves_since_last_shot = 0  # reset the counter
             return True
 
     fn print_board(self):
