@@ -74,6 +74,20 @@ struct MorabarabaBoard:
             (self.board[2][4] == player and self.board[4][2] == player):
                 return True
         
+        # check outer diagonal mills
+        if (row == 6 and col == 0) or (row == 5 and col == 1) or (row == 4 and col == 2):
+            if self.board[6][0] == player and self.board[5][1] == player and self.board[4][2] == player:
+                return True
+        if (row == 0 and col == 6) or (row == 1 and col == 5) or (row == 2 and col == 4):
+            if self.board[0][6] == player and self.board[1][5] == player and self.board[2][4] == player:
+                return True
+        if (row == 0 and col == 0) or (row == 1 and col == 1) or (row == 2 and col == 2):
+            if self.board[0][0] == player and self.board[1][1] == player and self.board[2][2] == player:
+                return True
+        if (row == 6 and col == 6) or (row == 5 and col == 5) or (row == 4 and col == 4):
+            if self.board[6][6] == player and self.board[5][5] == player and self.board[4][4] == player:
+                return True
+
         return False
 
     # 0 is invalid
@@ -109,6 +123,7 @@ struct MorabarabaBoard:
 
             if self.is_valid_position(row, col) and self.board[row][col] != player and self.board[row][col] != opponent:
                 self.board[row][col] = player
+                print("placed cow for player", player, "at row", row, "col", col)
                 if self.is_in_mill(row, col, player):
                     print("player", player, "got a mill")
                     try:
