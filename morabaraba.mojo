@@ -47,5 +47,5 @@ fn check_win_condition(inout game: MorabarabaBoard) -> Bool:
 fn main() raises:
     print_intro()
     var game = MorabarabaBoard()
-    
+    game.print_board()
     play_game(game)

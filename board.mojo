@@ -251,6 +251,16 @@ struct MorabarabaBoard:
         
         print("player ", player, ", choose an opponent's cow to shoot")
         print("enter the row and column (0-6) separated by a space:")
+
+        # check if all pieces are in a mill
+        var all_in_mill = True
+        for row in range(7):
+            for col in range(7):
+                if self.board[row][col] == opponent and not self.is_in_mill(row, col, opponent):
+                    all_in_mill = False
+                    break
+            if not all_in_mill:
+                break
         
         while True:
             var input_str = self.get_input()
@@ -277,7 +287,7 @@ struct MorabarabaBoard:
                 print("invalid position. there is no opponent cow at this location")
                 continue
             
-            if self.is_in_mill(row, col, opponent):
+            if not all_in_mill and self.is_in_mill(row, col, opponent):
                 print("this cow is part of a mill and cannot be shot. choose another piece")
                 continue
             
