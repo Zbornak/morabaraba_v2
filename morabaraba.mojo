@@ -20,27 +20,35 @@ fn play_game(inout game: MorabarabaBoard) raises:
     var current_player = 2  # Start with player 2
     while True:
         print("player ", current_player, "'s turn")
+        if not game.has_valid_moves(current_player):
+            print("player ", current_player, " has no valid moves and loses the game")
+            break
+
         if game.count_player_cows(current_player) > 3:
             if game.move_cow(current_player):
                 game.print_board()
-                current_player = 3 if current_player == 2 else 2
         else:
             print("player ", current_player, " has only 3 cows left and they can now fly")
             if game.fly_cow(current_player):
                 game.print_board()
-                current_player = 3 if current_player == 2 else 2
         
         if check_win_condition(game):
             break
+        
+        current_player = 3 if current_player == 2 else 2
 
 fn check_win_condition(inout game: MorabarabaBoard) -> Bool:
     if game.count_player_cows(2) < 3:
-        print("Player 3 wins, ukuhalalisela!")
-        print("hamba kahle")
+        print("Player 3 wins! Player 2 has fewer than 3 pieces.")
         return True
     elif game.count_player_cows(3) < 3:
-        print("Player 2 wins, ukuhalalisela!")
-        print("hamba kahle")
+        print("Player 2 wins! Player 3 has fewer than 3 pieces.")
+        return True
+    elif not game.has_valid_moves(2):
+        print("Player 3 wins! Player 2 has no valid moves.")
+        return True
+    elif not game.has_valid_moves(3):
+        print("Player 2 wins! Player 3 has no valid moves.")
         return True
     return False
 
