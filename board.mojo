@@ -142,10 +142,10 @@ struct MorabarabaBoard:
                 to_row = atol(input_parts[2])
                 to_col = atol(input_parts[3])
             except:
-                print("Invalid input. Please enter valid numbers.")
+                print("invalid input. please enter valid numbers.")
                 continue
             if self.board[from_row][from_col] != player:
-                print("Invalid move: no piece at the starting position")
+                print("invalid move: no piece at the starting position")
                 continue
 
             if self.board[to_row][to_col] != 1:  # assuming 1 represents an empty position
@@ -153,18 +153,18 @@ struct MorabarabaBoard:
                 continue
 
             if not self.is_adjacent(from_row, from_col, to_row, to_col):
-                print("Invalid move: Can only move to adjacent positions")
+                print("invalid move: can only move to adjacent positions")
                 continue
 
             self.board[to_row][to_col] = player
             self.board[from_row][from_col] = 1  # set the 'from' position to empty
 
             if self.is_in_mill(to_row, to_col, player):
-                print("Player", player, "formed a mill!")
+                print("Player", player, "formed a mill")
                 try:
                     _ = self.shoot_opponent_cow(player)
                 except:
-                    print("Unable to remove opponent piece")
+                    print("Unable to remove opponent cow")
 
             return True
 
@@ -190,6 +190,57 @@ struct MorabarabaBoard:
             return abs(row1 - row2) == 1 and abs(col1 - col2) == 1
 
         return False
+
+    fn fly_cow(inout self, player: Int) raises -> Bool:
+        #var opponent = 3 if player == 2 else 2  # Assuming player 2 and 3
+
+        print("player ", player, ", choose a cow to fly.")
+        print("enter the current row and column (0-6) of your cow, then the destination row and column, all separated by spaces:")
+
+        while True:
+            var input_str = self.get_input()
+            var input_parts = input_str.split()
+
+            if len(input_parts) != 4:
+                print("invalid input. Please enter four numbers separated by spaces.")
+                continue
+
+            var from_row: Int
+            var from_col: Int
+            var to_row: Int
+            var to_col: Int
+            try:
+                from_row = atol(input_parts[0])
+                from_col = atol(input_parts[1])
+                to_row = atol(input_parts[2])
+                to_col = atol(input_parts[3])
+            except:
+                print("invalid input. Please enter valid numbers.")
+                continue
+
+            if not self.is_valid_position(from_row, from_col) or not self.is_valid_position(to_row, to_col):
+                print("invalid position. please choose valid board positions.")
+                continue
+
+            if self.board[from_row][from_col] != player:
+                print("invalid move: no cow at the starting position")
+                continue
+
+            if self.board[to_row][to_col] != 1:  # Assuming 1 represents an empty position
+                print("invalid move: destination is not empty")
+                continue
+
+            self.board[to_row][to_col] = player
+            self.board[from_row][from_col] = 1  # Set the 'from' position to empty
+
+            if self.is_in_mill(to_row, to_col, player):
+                print("player", player, "formed a mill")
+                try:
+                    _ = self.shoot_opponent_cow(player)
+                except:
+                    print("unable to remove opponent cow")
+
+            return True
 
     fn shoot_opponent_cow(inout self, player: Int) raises -> Bool:
         var opponent = 3 if player == 2 else 2  # assuming player 2 and 3
