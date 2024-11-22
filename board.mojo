@@ -82,6 +82,10 @@ struct MorabarabaBoard:
     # 2 is player 1
     # 3 is player 2
     fn place_cow(inout self, player: Int) raises -> Bool:
+        if self.count_placed_cows(player) >= 12:
+            print("You have already placed all 12 pieces.")
+            return False
+
         var opponent = 3 if player == 2 else 2  # assuming player 2 and 3
         
         print("player ", player, ", choose where to place your cow.")
@@ -303,6 +307,14 @@ struct MorabarabaBoard:
                 self.print_board()
                 current_player = 3 if current_player == 2 else 2
         print("placement phase complete. moving to the movement phase.")
+
+    fn count_player_cows(self, player: Int) -> Int:
+        var count = 0
+        for row in range(7):
+            for col in range(7):
+                if self.board[row][col] == player:
+                    count += 1
+        return count
 
     fn count_placed_cows(self, player: Int) -> Int:
         var count = 0
