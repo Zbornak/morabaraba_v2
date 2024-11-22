@@ -83,12 +83,12 @@ struct MorabarabaBoard:
     # 3 is player 2
     fn place_cow(inout self, player: Int) raises -> Bool:
         if self.count_placed_cows(player) >= 12:
-            print("You have already placed all 12 pieces.")
+            print("you have already placed all 12 of your cows")
             return False
 
         var opponent = 3 if player == 2 else 2  # assuming player 2 and 3
         
-        print("player ", player, ", choose where to place your cow.")
+        print("player ", player, ", choose where to place your cow")
         print("enter the row and column (0-6) separated by a space:")
 
         while True:
@@ -96,7 +96,7 @@ struct MorabarabaBoard:
             var input_parts = input_str.split()
             
             if len(input_parts) != 2:
-                print("invalid input. please enter two numbers separated by a space.")
+                print("invalid input. please enter two numbers separated by a space")
                 continue
             
             var row: Int
@@ -105,7 +105,7 @@ struct MorabarabaBoard:
                 row = atol(input_parts[0])
                 col = atol(input_parts[1])
             except:
-                print("invalid input. please enter valid numbers.")
+                print("invalid input. please enter valid numbers")
                 continue
 
             if self.is_valid_position(row, col) and self.board[row][col] != player and self.board[row][col] != opponent:
@@ -118,14 +118,14 @@ struct MorabarabaBoard:
                         print("unable to shoot opponent cow")
                 return True
             else:
-                print("invalid position. please choose an empty, valid position.")
+                print("invalid position. please choose an empty, valid position")
         
         #return False
 
     fn move_cow(inout self, player: Int) raises -> Bool:
         #var opponent = 3 if player == 2 else 2  # assuming player 2 and 3
 
-        print("player ", player, ", choose a cow to move.")
+        print("player ", player, ", choose a cow to move")
         print("enter the current row and column (0-6) of your cow, then the destination row and column, all separated by spaces:")
 
         while True:
@@ -133,7 +133,7 @@ struct MorabarabaBoard:
             var input_parts = input_str.split()
 
             if len(input_parts) != 4:
-                print("invalid input. Please enter four numbers separated by spaces.")
+                print("invalid input. Please enter four numbers separated by spaces")
                 continue
 
             var from_row: Int
@@ -146,7 +146,7 @@ struct MorabarabaBoard:
                 to_row = atol(input_parts[2])
                 to_col = atol(input_parts[3])
             except:
-                print("invalid input. please enter valid numbers.")
+                print("invalid input. please enter valid numbers")
                 continue
             if self.board[from_row][from_col] != player:
                 print("invalid move: no piece at the starting position")
@@ -198,7 +198,7 @@ struct MorabarabaBoard:
     fn fly_cow(inout self, player: Int) raises -> Bool:
         #var opponent = 3 if player == 2 else 2  # Assuming player 2 and 3
 
-        print("player ", player, ", choose a cow to fly.")
+        print("player ", player, ", choose a cow to fly")
         print("enter the current row and column (0-6) of your cow, then the destination row and column, all separated by spaces:")
 
         while True:
@@ -206,7 +206,7 @@ struct MorabarabaBoard:
             var input_parts = input_str.split()
 
             if len(input_parts) != 4:
-                print("invalid input. Please enter four numbers separated by spaces.")
+                print("invalid input. Please enter four numbers separated by spaces")
                 continue
 
             var from_row: Int
@@ -219,11 +219,11 @@ struct MorabarabaBoard:
                 to_row = atol(input_parts[2])
                 to_col = atol(input_parts[3])
             except:
-                print("invalid input. Please enter valid numbers.")
+                print("invalid input. Please enter valid numbers")
                 continue
 
             if not self.is_valid_position(from_row, from_col) or not self.is_valid_position(to_row, to_col):
-                print("invalid position. please choose valid board positions.")
+                print("invalid position. please choose valid board positions")
                 continue
 
             if self.board[from_row][from_col] != player:
@@ -249,7 +249,7 @@ struct MorabarabaBoard:
     fn shoot_opponent_cow(inout self, player: Int) raises -> Bool:
         var opponent = 3 if player == 2 else 2  # assuming player 2 and 3
         
-        print("player ", player, ", choose an opponent's cow to shoot.")
+        print("player ", player, ", choose an opponent's cow to shoot")
         print("enter the row and column (0-6) separated by a space:")
         
         while True:
@@ -257,7 +257,7 @@ struct MorabarabaBoard:
             var input_parts = input_str.split()
             
             if len(input_parts) != 2:
-                print("invalid input. please enter two numbers separated by a space.")
+                print("invalid input. please enter two numbers separated by a space")
                 continue
             
             var row: Int
@@ -266,19 +266,19 @@ struct MorabarabaBoard:
                 row = atol(input_parts[0])
                 col = atol(input_parts[1])
             except:
-                print("invalid input. please enter valid numbers.")
+                print("invalid input. please enter valid numbers")
                 continue
             
             if row < 0 or row > 6 or col < 0 or col > 6:
-                print("invalid position. row and column must be between 0 and 6.")
+                print("invalid position. row and column must be between 0 and 6")
                 continue
             
             if self.board[row][col] != opponent:
-                print("invalid position. there is no opponent cow at this location.")
+                print("invalid position. there is no opponent cow at this location")
                 continue
             
             if self.is_in_mill(row, col, opponent):
-                print("this cow is part of a mill and cannot be shot. choose another piece.")
+                print("this cow is part of a mill and cannot be shot. choose another piece")
                 continue
             
             self.board[row][col] = 1
@@ -302,11 +302,11 @@ struct MorabarabaBoard:
     fn placement_phase(inout self) raises:
         var current_player = 2  # start with player 2
         while self.count_placed_cows(2) < 12 or self.count_placed_cows(3) < 12:
-            print("player ", current_player, " (", self.count_placed_cows(current_player), "/12 pieces placed)")
+            print("player ", current_player, " (", self.count_placed_cows(current_player), "/12 cows placed)")
             if self.place_cow(current_player):
                 self.print_board()
                 current_player = 3 if current_player == 2 else 2
-        print("placement phase complete. moving to the movement phase.")
+        print("placement phase complete. moving to the movement phase")
 
     fn count_player_cows(self, player: Int) -> Int:
         var count = 0
