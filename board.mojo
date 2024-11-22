@@ -48,15 +48,21 @@ struct MorabarabaBoard:
         return self.board[row][col] == 1
         
     fn is_in_mill(self, row: Int, col: Int, player: Int) -> Bool:
-        # check horizontal mill
-        if col == 0 or col == 3 or col == 6:
-            if self.board[row][0] == player and self.board[row][3] == player and self.board[row][6] == player:
-                return True
+        # check horizontal mills
+        if (col == 0 or col == 1 or col == 2) and self.board[row][0] == player and self.board[row][1] == player and self.board[row][2] == player:
+            return True
+        if (col == 3 or col == 4 or col == 5) and self.board[row][3] == player and self.board[row][4] == player and self.board[row][5] == player:
+            return True
+        if (col == 4 or col == 5 or col == 6) and self.board[row][4] == player and self.board[row][5] == player and self.board[row][6] == player:
+            return True
         
-        # check vertical mill
-        if row == 0 or row == 3 or row == 6:
-            if self.board[0][col] == player and self.board[3][col] == player and self.board[6][col] == player:
-                return True
+        # check vertical mills:
+        if (row == 0 or row == 1 or row == 2) and self.board[0][col] == player and self.board[1][col] == player and self.board[2][col] == player:
+            return True
+        if (row == 3 or row == 4 or row == 5) and self.board[3][col] == player and self.board[4][col] == player and self.board[5][col] == player:
+            return True
+        if (row == 4 or row == 5 or row == 6) and self.board[4][col] == player and self.board[5][col] == player and self.board[6][col] == player:
+            return True
         
         # check middle horizontal lines
         if row == 1 or row == 5:
