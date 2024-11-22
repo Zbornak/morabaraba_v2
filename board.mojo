@@ -69,10 +69,9 @@ struct MorabarabaBoard:
                 return True
         
         # check diagonal lines in the middle square
-        if (row == 2 or row == 3 or row == 4) and (col == 2 or col == 3 or col == 4):
-            if self.board[2][2] == player and self.board[3][3] == player and self.board[4][4] == player:
-                return True
-            if self.board[2][4] == player and self.board[3][3] == player and self.board[4][2] == player:
+        if row == 3 and col == 3:
+            if (self.board[2][2] == player and self.board[4][4] == player) or
+            (self.board[2][4] == player and self.board[4][2] == player):
                 return True
         
         return False
