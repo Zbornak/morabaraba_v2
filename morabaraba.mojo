@@ -35,10 +35,12 @@ fn play_game(inout game: MorabarabaBoard) raises:
 
 fn check_win_condition(inout game: MorabarabaBoard) -> Bool:
     if game.count_player_cows(2) < 3:
-        print("Player 3 wins!")
+        print("Player 3 wins, ukuhalalisela!")
+        print("hamba kahle")
         return True
     elif game.count_player_cows(3) < 3:
-        print("Player 2 wins!")
+        print("Player 2 wins, ukuhalalisela!")
+        print("hamba kahle")
         return True
     return False
 
@@ -46,17 +48,4 @@ fn main() raises:
     print_intro()
     var game = MorabarabaBoard()
     
-    print("Initial board:")
-    game.print_board()
-    
-    print("\nPlacing cow for player 2:")
-    _ = game.place_cow(2)
-    game.print_board()
-
-    print("\nPlacing cow for player 3:")
-    _ = game.place_cow(3)
-    game.print_board()
-    
-    print("\nMoving cow for player 2:")
-    _ = game.move_cow(2)
-    game.print_board()
+    play_game(game)
