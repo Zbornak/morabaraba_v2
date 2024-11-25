@@ -144,8 +144,6 @@ struct MorabarabaBoard:
                 return True
             else:
                 print("invalid position. please choose an empty, valid position")
-        
-        #return False
 
     fn move_cow(inout self, player: Int) raises -> Bool:
         #var opponent = 3 if player == 2 else 2  # assuming player 2 and 3
@@ -196,8 +194,6 @@ struct MorabarabaBoard:
                     print("Unable to remove opponent cow")
 
             return True
-
-        #return False
 
     fn is_adjacent(self, row1: Int, col1: Int, row2: Int, col2: Int) -> Bool:
         # Check if the positions are the same
