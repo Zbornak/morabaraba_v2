@@ -146,7 +146,7 @@ struct MorabarabaBoard:
 
         var opponent = 3 if player == 2 else 2  # assuming player 2 and 3
         
-        print("player ", player, ", choose where to place your cow")
+        print("player ", player - 1, ", choose where to place your cow")
         print("enter the row and column (0-6) separated by a space:")
 
         while True:
@@ -168,9 +168,9 @@ struct MorabarabaBoard:
 
             if self.is_valid_position(row, col) and self.board[row][col] != player and self.board[row][col] != opponent:
                 self.board[row][col] = player
-                print("placed cow for player", player, "at row", row, "col", col)
+                print("placed cow for player", player - 1, "at row", row, "col", col)
                 if self.is_in_mill(row, col, player):
-                    print("player", player, "got a mill")
+                    print("player", player - 1, "got a mill")
                     try:
                         _ = self.shoot_opponent_cow(player)
                     except:
@@ -182,7 +182,7 @@ struct MorabarabaBoard:
     fn move_cow(inout self, player: Int) raises -> Bool:
         #var opponent = 3 if player == 2 else 2  # assuming player 2 and 3
 
-        print("player ", player, ", choose a cow to move")
+        print("player ", player - 1, ", choose a cow to move")
         print("enter the current row and column (0-6) of your cow, then the destination row and column, all separated by spaces:")
 
         while True:
@@ -221,7 +221,7 @@ struct MorabarabaBoard:
             self.board[from_row][from_col] = 1  # set the 'from' position to empty
 
             if self.is_in_mill(to_row, to_col, player):
-                print("Player", player, "formed a mill")
+                print("Player", player - 1, "formed a mill")
                 try:
                     _ = self.shoot_opponent_cow(player)
                 except:
@@ -253,7 +253,7 @@ struct MorabarabaBoard:
     fn fly_cow(inout self, player: Int) raises -> Bool:
         #var opponent = 3 if player == 2 else 2  # Assuming player 2 and 3
 
-        print("player ", player, ", choose a cow to fly")
+        print("player ", player - 1, ", choose a cow to fly")
         print("enter the current row and column (0-6) of your cow, then the destination row and column, all separated by spaces:")
 
         while True:
@@ -293,7 +293,7 @@ struct MorabarabaBoard:
             self.board[from_row][from_col] = 1  # Set the 'from' position to empty
 
             if self.is_in_mill(to_row, to_col, player):
-                print("player", player, "formed a mill")
+                print("player", player - 1, "formed a mill")
                 try:
                     _ = self.shoot_opponent_cow(player)
                 except:
@@ -304,7 +304,7 @@ struct MorabarabaBoard:
     fn shoot_opponent_cow(inout self, player: Int) raises -> Bool:
         var opponent = 3 if player == 2 else 2  # assuming player 2 and 3
         
-        print("player ", player, ", choose an opponent's cow to shoot")
+        print("player ", player - 1, ", choose an opponent's cow to shoot")
         print("enter the row and column (0-6) separated by a space:")
 
         # check if all pieces are in a mill
@@ -368,7 +368,7 @@ struct MorabarabaBoard:
     fn placement_phase(inout self) raises:
         var current_player = 2  # start with player 2
         while self.count_placed_cows(2) < 12 or self.count_placed_cows(3) < 12:
-            print("player ", current_player, " (", self.count_placed_cows(current_player), "/12 cows placed)")
+            print("player ", current_player - 1, " (", self.count_placed_cows(current_player), "/12 cows placed)")
             if self.place_cow(current_player):
                 self.print_board()
                 current_player = 3 if current_player == 2 else 2
