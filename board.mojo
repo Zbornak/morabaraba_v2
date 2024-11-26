@@ -52,53 +52,87 @@ struct MorabarabaBoard:
         return self.board[row][col] == 1
         
     fn is_in_mill(self, row: Int, col: Int, player: Int) -> Bool:
-        # Check horizontal mills (8 in total)
-        if row == 0 or row == 3 or row == 6:
-            if self.board[row][0] == player and self.board[row][3] == player and self.board[row][6] == player:
-                return True
-        if row == 1 or row == 5:
-            if self.board[row][1] == player and self.board[row][3] == player and self.board[row][5] == player:
-                return True
-        if row == 2 or row == 4:
-            if self.board[row][2] == player and self.board[row][3] == player and self.board[row][4] == player:
-                return True
-
-        # Check vertical mills (8 in total)
-        if col == 0 or col == 3 or col == 6:
-            if self.board[0][col] == player and self.board[3][col] == player and self.board[6][col] == player:
-                return True
-        if col == 1 or col == 5:
-            if self.board[1][col] == player and self.board[3][col] == player and self.board[5][col] == player:
-                return True
-        if col == 2 or col == 4:
-            if self.board[2][col] == player and self.board[3][col] == player and self.board[4][col] == player:
-                return True
-
-        # Additional checks for vertical mills in the middle column
-        if col == 3:
-            if self.board[0][3] == player and self.board[1][3] == player and self.board[2][3] == player:
-                return True
-            if self.board[4][3] == player and self.board[5][3] == player and self.board[6][3] == player:
-                return True
-
-        # Check diagonal mills (4 in total)
-        # Top-left to bottom-right diagonal
-        if (row == 0 and col == 0) or (row == 3 and col == 3) or (row == 6 and col == 6):
-            if self.board[0][0] == player and self.board[3][3] == player and self.board[6][6] == player:
-                return True
-        # Top-right to bottom-left diagonal
-        if (row == 0 and col == 6) or (row == 3 and col == 3) or (row == 6 and col == 0):
-            if self.board[0][6] == player and self.board[3][3] == player and self.board[6][0] == player:
-                return True
-        # Top-left to middle diagonal
+        # top-left diagonal
         if (row == 0 and col == 0) or (row == 1 and col == 1) or (row == 2 and col == 2):
             if self.board[0][0] == player and self.board[1][1] == player and self.board[2][2] == player:
                 return True
-        # Bottom-right to middle diagonal
-        if (row == 4 and col == 4) or (row == 5 and col == 5) or (row == 6 and col == 6):
-            if self.board[4][4] == player and self.board[5][5] == player and self.board[6][6] == player:
+        # top-middle down
+        if (row == 0 and col == 3) or (row == 1 and col == 3) or (row == 2 and col == 3):
+            if self.board[0][3] == player and self.board[1][3] == player and self.board[2][3] == player:
                 return True
-
+        # top-right diagonal
+        if (row == 0 and col == 6) or (row == 1 and col == 5) or (row == 2 and col == 4):
+            if self.board[0][6] == player and self.board[1][5] == player and self.board[2][4] == player:
+                return True
+        # middle-right left
+        if (row == 3 and col == 6) or (row == 3 and col == 5) or (row == 3 and col == 4):
+            if self.board[3][6] == player and self.board[3][5] == player and self.board[3][4] == player:
+                return True
+        # bottom-right diagonal
+        if (row == 6 and col == 6) or (row == 5 and col == 5) or (row == 4 and col == 4):
+            if self.board[6][6] == player and self.board[5][5] == player and self.board[4][4] == player:
+                return True
+        # bottom-middle up
+        if (row == 6 and col == 3) or (row == 5 and col == 3) or (row == 4 and col == 3):
+            if self.board[6][3] == player and self.board[5][3] == player and self.board[4][3] == player:
+                return True
+        # bottom-left diagonal 
+        if (row == 6 and col == 0) or (row == 5 and col == 1) or (row == 4 and col == 2):
+            if self.board[6][0] == player and self.board[5][1] == player and self.board[4][2] == player:
+                return True
+        # middle-left right
+        if (row == 3 and col == 0) or (row == 3 and col == 1) or (row == 3 and col == 2):
+            if self.board[3][0] == player and self.board[3][1] == player and self.board[3][2] == player:
+                return True
+        # 0 row right
+        if (row == 0 and col == 0) or (row == 0 and col == 3) or (row == 0 and col == 6):
+            if self.board[0][0] == player and self.board[0][3] == player and self.board[0][6] == player:
+                return True
+        # 1 row right
+        if (row == 1 and col == 1) or (row == 1 and col == 3) or (row == 1 and col == 5):
+            if self.board[1][1] == player and self.board[1][3] == player and self.board[1][5] == player:
+                return True
+        # 2 row right
+        if (row == 2 and col == 2) or (row == 2 and col == 3) or (row == 2 and col == 4):
+            if self.board[2][2] == player and self.board[2][3] == player and self.board[2][4] == player:
+                return True
+        # 4 row right
+        if (row == 4 and col == 2) or (row == 4 and col == 3) or (row == 4 and col == 4):
+            if self.board[4][2] == player and self.board[4][3] == player and self.board[4][4] == player:
+                return True
+        # 5 row right
+        if (row == 5 and col == 1) or (row == 5 and col == 3) or (row == 5 and col == 5):
+            if self.board[5][1] == player and self.board[5][3] == player and self.board[5][5] == player:
+                return True
+        # 6 row right
+        if (row == 6 and col == 0) or (row == 6 and col == 3) or (row == 6 and col == 6):
+            if self.board[6][0] == player and self.board[6][3] == player and self.board[6][6] == player:
+                return True
+        # 0 column down
+        if (row == 0 and col == 0) or (row == 3 and col == 0) or (row == 6 and col == 0):
+            if self.board[0][0] == player and self.board[3][0] == player and self.board[6][0] == player:
+                return True
+        # 1 column down
+        if (row == 1 and col == 1) or (row == 3 and col == 1) or (row == 5 and col == 1):
+            if self.board[1][1] == player and self.board[3][1] == player and self.board[5][1] == player:
+                return True
+        # 2 column down
+        if (row == 2 and col == 2) or (row == 3 and col == 2) or (row == 4 and col == 2):
+            if self.board[2][2] == player and self.board[3][2] == player and self.board[4][2] == player:
+                return True
+        # 4 column down
+        if (row == 2 and col == 4) or (row == 3 and col == 4) or (row == 4 and col == 4):
+            if self.board[2][4] == player and self.board[3][4] == player and self.board[4][4] == player:
+                return True
+        # 5 column down
+        if (row == 1 and col == 5) or (row == 3 and col == 5) or (row == 5 and col == 5):
+            if self.board[1][5] == player and self.board[3][5] == player and self.board[5][5] == player:
+                return True
+        # 6 column down
+        if (row == 0 and col == 6) or (row == 3 and col == 6) or (row == 6 and col == 6):
+            if self.board[0][6] == player and self.board[3][6] == player and self.board[6][6] == player:
+                return True
+        
         return False
 
     # 0 is invalid
