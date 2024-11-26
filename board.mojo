@@ -367,11 +367,14 @@ struct MorabarabaBoard:
 
     fn placement_phase(inout self) raises:
         var current_player = 2  # start with player 2
-        while self.count_placed_cows(2) < 12 or self.count_placed_cows(3) < 12:
+        while self.count_placed_cows(2) < 12 and self.count_placed_cows(3) < 12:
             print("player ", current_player - 1, " (", self.count_placed_cows(current_player), "/12 cows placed)")
             if self.place_cow(current_player):
                 self.print_board()
-                current_player = 3 if current_player == 2 else 2
+            else:
+                print("failed to place cow, trying again")
+                continue
+            current_player = 3 if current_player == 2 else 2
         print("placement phase complete. moving to the movement phase")
 
     fn count_player_cows(self, player: Int) -> Int:
