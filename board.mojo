@@ -230,23 +230,22 @@ struct MorabarabaBoard:
             return True
 
     fn is_adjacent(self, row1: Int, col1: Int, row2: Int, col2: Int) -> Bool:
-        # Check if the positions are the same
+        # check if the positions are the same
         if row1 == row2 and col1 == col2:
             return False
 
-        # Check for corner to corner moves
-        if (row1 == 0 or row1 == 6) and (col1 == 0 or col1 == 6):
-            return abs(row1 - row2) == 1 and abs(col1 - col2) == 1
-
-        # Check for moves along the same line
+        # check for moves along the same line
         if row1 == row2:
-            return abs(col1 - col2) == 3 or (abs(col1 - col2) == 1 and (row1 % 3 == 0 or col1 % 3 == 1))
+            return abs(col1 - col2) == 4 or (abs(col1 - col2) == 1 and (row1 % 2 == 0 or col1 % 2 == 0))
         if col1 == col2:
-            return abs(row1 - row2) == 3 or (abs(row1 - row2) == 1 and (col1 % 3 == 0 or row1 % 3 == 1))
-            
-        # Check for diagonal moves in the middle square
-        if (row1 == 3 and col1 == 3) or (row2 == 3 and col2 == 3):
-            return abs(row1 - row2) == 1 and abs(col1 - col2) == 1
+            return abs(row1 - row2) == 4 or (abs(row1 - row2) == 1 and (row1 % 2 == 0 or col1 % 2 == 0))
+
+        # check for valid moves between rings
+        if (abs(row1 - row2) == 1 and abs(col1 - col2) == 1) and (
+            (row1 % 2 == 1 and col1 % 2 == 1) or
+            (row2 % 2 == 1 and col2 % 2 == 1)
+        ):
+            return True
 
         return False
 
