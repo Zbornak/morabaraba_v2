@@ -370,11 +370,12 @@ struct MorabarabaBoard:
             return True
 
     fn print_board(self):
-        print("      0   1   2   3   4   5   6")  # x-axis labels
         print()
+        print("        0   1   2   3   4   5   6")  # x-axis labels
+        print("   -------------------------------")
         print()
         for row in range(7):
-            print(row, end="    ")  # y-axis label
+            print(row, "|", end="    ")  # y-axis label
             for col in range(7):
                 if self.board[row][col] == 1:
                     print(" O  ", end="")
