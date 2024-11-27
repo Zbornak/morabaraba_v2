@@ -229,23 +229,42 @@ struct MorabarabaBoard:
 
             return True
 
+    fn is_valid_adjacent_position(self, row: Int, col: Int) -> Bool:
+        return (row == 0 and (col == 0 or col == 3 or col == 6)) or
+            (row == 1 and (col == 1 or col == 3 or col == 5)) or
+            (row == 2 and (col == 2 or col == 3 or col == 4)) or
+            (row == 3 and (col == 0 or col == 1 or col == 2 or col == 4 or col == 5 or col == 6)) or
+            (row == 4 and (col == 2 or col == 3 or col == 4)) or
+            (row == 5 and (col == 1 or col == 3 or col == 5)) or
+            (row == 6 and (col == 0 or col == 3 or col == 6))
+
+    fn is_valid_adjacent_corner_move(self, row: Int, col: Int) -> Bool:
+        return (row == 1 and (col == 1 or col == 5)) or
+            (row == 5 and (col == 1 or col == 5))
+
+    fn is_valid_adjacent_inner_move(self, row: Int, col: Int) -> Bool:
+        return (row == 2 and (col == 2 or col == 4)) or
+            (row == 4 and (col == 2 or col == 4))
+
     fn is_adjacent(self, row1: Int, col1: Int, row2: Int, col2: Int) -> Bool:
         # check if the positions are the same
         if row1 == row2 and col1 == col2:
             return False
 
+        # check if both positions are valid
+        if not self.is_valid_adjacent_position(row1, col1) or not self.is_valid_adjacent_position(row2, col2):
+            return False
+
         # check for moves along the same line
         if row1 == row2:
-            return abs(col1 - col2) == 4 or (abs(col1 - col2) == 1 and (row1 % 2 == 0 or col1 % 2 == 0))
+            return abs(col1 - col2) == 1 or abs(col1 - col2) == 3
         if col1 == col2:
-            return abs(row1 - row2) == 4 or (abs(row1 - row2) == 1 and (row1 % 2 == 0 or col1 % 2 == 0))
+            return abs(row1 - row2) == 1 or abs(row1 - row2) == 3
 
         # check for valid moves between rings
-        if (abs(row1 - row2) == 1 and abs(col1 - col2) == 1) and (
-            (row1 % 2 == 1 and col1 % 2 == 1) or
-            (row2 % 2 == 1 and col2 % 2 == 1)
-        ):
-            return True
+        if (self.is_valid_adjacent_corner_move(row1, col1) and self.is_valid_adjacent_inner_move(row2, col2)) or
+        (self.is_valid_adjacent_corner_move(row2, col2) and self.is_valid_adjacent_inner_move(row1, col1)):
+            return abs(row1 - row2) == 1 and abs(col1 - col2) == 1
 
         return False
 
