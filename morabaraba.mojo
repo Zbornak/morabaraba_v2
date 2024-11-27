@@ -23,6 +23,7 @@ fn play_game(inout game: MorabarabaBoard) raises:
 
         if not game.has_valid_moves(current_player):
             print("player ", current_player - 1, " has no valid moves and loses the game")
+            print("thank-you for playing, hamba kahle")
             break
 
         if game.count_player_cows(current_player) > 3:
@@ -44,25 +45,31 @@ fn play_game(inout game: MorabarabaBoard) raises:
             game.moves_since_last_shot += 1
             if game.moves_since_last_shot >= 10:
                 print("draw, neither player has shot a cow in 10 moves")
+                print("thank-you for playing, hamba kahle")
                 break
         
         current_player = 3 if current_player == 2 else 2
 
 fn check_win_condition(inout game: MorabarabaBoard) -> Bool:
     if game.count_player_cows(2) < 3:
-        print("player 2 wins. player 2 has fewer than 3 cows")
+        print("player 2 wins. player 2 has fewer than 3 cows. ukuhalalisela!")
+        print("thank-you for playing, hamba kahle")
         return True
     elif game.count_player_cows(3) < 3:
-        print("player 1 wins. player 3 has fewer than 3 cows")
+        print("player 1 wins. player 3 has fewer than 3 cows. ukuhalalisela!")
+        print("thank-you for playing, hamba kahle")
         return True
     elif not game.has_valid_moves(2):
-        print("player 2 wins. player 2 has no valid moves")
+        print("player 2 wins. player 2 has no valid moves. ukuhalalisela!")
+        print("thank-you for playing, hamba kahle")
         return True
     elif not game.has_valid_moves(3):
-        print("player 1 wins. player 3 has no valid moves")
+        print("player 1 wins. player 3 has no valid moves. ukuhalalisela!")
+        print("thank-you for playing, hamba kahle")
         return True
     elif game.three_cow_phase and game.moves_since_last_shot >= 10:
         print("draw, neither player has shot a cow in 10 moves")
+        print("thank-you for playing, hamba kahle")
         return True
     return False
 
