@@ -11,7 +11,7 @@ from utils import StaticIntTuple
 from python import Python
 from sys import exit
 from rules import print_rules
-from random import random_si64
+from random import random_float64
 
 struct MorabarabaBoard:
     var board: StaticTuple[StaticTuple[Int, 7], 7]
@@ -45,26 +45,6 @@ struct MorabarabaBoard:
                 print("enter your move:")
             else:
                 return input_str
-
-    # get player names and decide who starts
-    fn decide_player_one(self) raises:
-        var name_list = List[String]()
-
-        print("first player enter your name: ")
-        var player_one_name = self.get_input()
-        name_list.append(player_one_name)
-
-        print("second player enter your name: ")
-        var player_two_name = self.get_input()
-        name_list.append(player_two_name)
-
-        var min_index = SIMD[DType.int64, 1](0)
-        var max_index = SIMD[DType.int64, 1](len(name_list) - 1)
-        var random_index = random_si64(min_index, max_index)
-        var random_name = name_list[random_index.__int__()]
-        print("impi will decide who starts...")
-        print(random_name, ", you are player 1 and will start. you are the dark cows")
-        print("ukuhalalisela!")
 
     # returns true if player picks a valid position, false if not
     fn is_valid_position(self, row: Int, col: Int) -> Bool:
