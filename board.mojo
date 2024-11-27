@@ -412,28 +412,26 @@ struct MorabarabaBoard:
         return count
 
     fn has_valid_moves(self, player: Int) -> Bool:
-        #var opponent = 3 if player == 2 else 2
-        
-        # Check if the player has any pieces left
+        # check if the player has any cows left
         var piece_count = self.count_player_cows(player)
         if piece_count == 0:
             return False
         
-        # If the player has 3 or fewer pieces, they can fly to any empty spot
+        # if the player has 3 or fewer cows, they can fly to any empty spot
         if piece_count <= 3:
-            for row in range(7):
-                for col in range(7):
-                    if self.board[row][col] == 1:  # Empty spot
+            for row in range(8):
+                for col in range(8):
+                    if self.is_valid_position(row, col) and self.board[row][col] == 1:  # empty spot
                         return True
         
-        # Otherwise, check for adjacent empty spots
-        for row in range(7):
-            for col in range(7):
+        # otherwise check for adjacent empty spots
+        for row in range(8):
+            for col in range(8):
                 if self.board[row][col] == player:
-                    # Check adjacent positions
-                    for adj_row in range(max(0, row-1), min(7, row+2)):
-                        for adj_col in range(max(0, col-1), min(7, col+2)):
-                            if self.is_valid_position(adj_row, adj_col) and self.board[adj_row][adj_col] == 1:
+                    # check adjacent positions using is_adjacent method
+                    for adj_row in range(8):
+                        for adj_col in range(8):
+                            if self.is_adjacent(row, col, adj_row, adj_col) and self.board[adj_row][adj_col] == 1:
                                 return True
         
         return False
