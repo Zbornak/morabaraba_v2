@@ -265,10 +265,16 @@ struct MorabarabaBoard:
         if col1 == col2:
             return abs(row1 - row2) == 1 or abs(row1 - row2) == 3
 
-        # check for valid moves between rings
-        if (self.is_valid_adjacent_corner_move(row1, col1) and self.is_valid_adjacent_inner_move(row2, col2)) or
-        (self.is_valid_adjacent_corner_move(row2, col2) and self.is_valid_adjacent_inner_move(row1, col1)):
-            return abs(row1 - row2) == 1 and abs(col1 - col2) == 1
+        # check for diagonal moves between rings
+        if abs(row1 - row2) == 1 and abs(col1 - col2) == 1:
+            # check if one position is on the outer ring and the other is on the middle ring
+            if (row1 == 0 or row1 == 6 or col1 == 0 or col1 == 6) and (row2 == 1 or row2 == 5 or col2 == 1 or col2 == 5):
+                return True
+            if (row2 == 0 or row2 == 6 or col2 == 0 or col2 == 6) and (row1 == 1 or row1 == 5 or col1 == 1 or col1 == 5):
+                return True
+            # check for moves between middle and inner rings
+            return (self.is_valid_adjacent_corner_move(row1, col1) and self.is_valid_adjacent_inner_move(row2, col2)) or
+                (self.is_valid_adjacent_corner_move(row2, col2) and self.is_valid_adjacent_inner_move(row1, col1))
 
         return False
 
