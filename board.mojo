@@ -17,6 +17,7 @@ struct MorabarabaBoard:
     var board: StaticTuple[StaticTuple[Int, 7], 7]
     var moves_since_last_shot: Int
     var three_cow_phase: Bool
+    var total_cows_placed: StaticTuple[Int, 2]  # index 0 for player 2, index 1 for player 3
 
     fn __init__(inout self):
         self.board = StaticTuple[StaticTuple[Int, 7], 7](
@@ -30,6 +31,7 @@ struct MorabarabaBoard:
         )
         self.moves_since_last_shot = 0
         self.three_cow_phase = False
+        self.total_cows_placed = StaticTuple[Int, 2](0, 0)
 
     # get user input (mojo input not currently working 211104)
     fn get_input(self) raises -> String:
@@ -169,6 +171,7 @@ struct MorabarabaBoard:
 
             if self.is_valid_position(row, col) and self.board[row][col] != player and self.board[row][col] != opponent:
                 self.board[row][col] = player
+                self.total_cows_placed[player - 2] += 1  # increment total cows placed
                 print("placed cow for player", player - 1, "at row", row, "col", col)
                 if self.is_in_mill(row, col, player):
                     print("player", player - 1, "got a mill")
@@ -410,12 +413,7 @@ struct MorabarabaBoard:
         return count
 
     fn count_placed_cows(self, player: Int) -> Int:
-        var count = 0
-        for row in range(7):
-            for col in range(7):
-                if self.board[row][col] == player:
-                    count += 1
-        return count
+        return self.total_cows_placed[player - 2]
 
     fn has_valid_moves(self, player: Int) -> Bool:
         # check if the player has any cows left
