@@ -8,10 +8,39 @@
 
 from utils import StaticTuple
 from utils import StaticIntTuple
+from utils.numerics import inf
+from utils.numerics import neg_inf
 from python import Python
 from sys import exit
 from rules import print_rules
 from random import random_float64
+from morabaraba import check_win_condition
+from collections import List
+
+@value
+struct Move(CollectionElement):
+    var from_row: Int
+    var from_col: Int
+    var to_row: Int
+    var to_col: Int
+
+    fn __init__(inout self, from_row: Int, from_col: Int, to_row: Int, to_col: Int):
+        self.from_row = from_row
+        self.from_col = from_col
+        self.to_row = to_row
+        self.to_col = to_col
+
+    fn __copyinit__(inout self, existing: Self):
+        self.from_row = existing.from_row
+        self.from_col = existing.from_col
+        self.to_row = existing.to_row
+        self.to_col = existing.to_col
+
+    fn __moveinit__(inout self, owned existing: Self):
+        self.from_row = existing.from_row
+        self.from_col = existing.from_col
+        self.to_row = existing.to_row
+        self.to_col = existing.to_col
 
 struct MorabarabaBoard:
     var board: StaticTuple[StaticTuple[Int, 7], 7]
@@ -47,6 +76,29 @@ struct MorabarabaBoard:
                 print("enter your move:")
             else:
                 return input_str
+
+    fn check_win_condition(self) -> Bool:
+        if self.count_player_cows(2) < 3:
+            print("player 2 wins. player 2 has fewer than 3 cows. ukuhalalisela!")
+            print("thank-you for playing, hamba kahle")
+            return True
+        elif self.count_player_cows(3) < 3:
+            print("player 1 wins. player 3 has fewer than 3 cows. ukuhalalisela!")
+            print("thank-you for playing, hamba kahle")
+            return True
+        elif not self.has_valid_moves(2):
+            print("player 2 wins. player 2 has no valid moves. ukuhalalisela!")
+            print("thank-you for playing, hamba kahle")
+            return True
+        elif not self.has_valid_moves(3):
+            print("player 1 wins. player 3 has no valid moves. ukuhalalisela!")
+            print("thank-you for playing, hamba kahle")
+            return True
+        elif self.three_cow_phase and self.moves_since_last_shot >= 10:
+            print("draw, neither player has shot a cow in 10 moves")
+            print("thank-you for playing, hamba kahle")
+            return True
+        return False
 
     # returns true if player picks a valid position, false if not
     fn is_valid_position(self, row: Int, col: Int) -> Bool:
@@ -444,4 +496,162 @@ struct MorabarabaBoard:
                             if self.is_adjacent(row, col, adj_row, adj_col) and self.board[adj_row][adj_col] == 1:
                                 return True
         
+        return False
+
+
+    # Impi
+    fn evaluate_board(self, player: Int) -> Int:
+        var opponent = 3 if player == 2 else 2
+        var score = 0
+        
+        # Count pieces
+        var player_pieces = self.count_player_cows(player)
+        var opponent_pieces = self.count_player_cows(opponent)
+        score += (player_pieces - opponent_pieces) * 10
+
+        # Count mills
+        var player_mills = self.count_mills(player)
+        var opponent_mills = self.count_mills(opponent)
+        score += (player_mills - opponent_mills) * 50
+
+        # Bonus for controlling center positions
+        if self.board[3][3] == player:
+            score += 5
+
+        return score
+
+    fn count_mills(self, player: Int) -> Int:
+        var mills = 0
+        for row in range(7):
+            for col in range(7):
+                if self.board[row][col] == player and self.is_in_mill(row, col, player):
+                    mills += 1
+        return mills // 3  # Divide by 3 as each mill is counted 3 times
+
+    fn is_valid_move(self, from_row: Int, from_col: Int, to_row: Int, to_col: Int, player: Int) -> Bool:
+        # Check if the destination is empty
+        if self.board[to_row][to_col] != 1:  # Assuming 1 represents an empty spot
+            return False
+        
+        # Check if the starting position contains the player's piece
+        if self.board[from_row][from_col] != player:
+            return False
+        
+        # If the player has more than 3 pieces, check for adjacency
+        if self.count_player_cows(player) > 3:
+            return self.is_adjacent(from_row, from_col, to_row, to_col)
+        
+        # If the player has 3 or fewer pieces, they can "fly" to any empty spot
+        return self.is_valid_position(to_row, to_col)
+
+    fn get_possible_moves(self, player: Int) -> List[Move]:
+        var moves = List[Move]()
+        for from_row in range(7):
+            for from_col in range(7):
+                if self.board[from_row][from_col] == player:
+                    for to_row in range(7):
+                        for to_col in range(7):
+                            if self.is_valid_move(from_row, from_col, to_row, to_col, player):
+                                moves.append(Move(from_row, from_col, to_row, to_col))
+        return moves
+
+    fn minimax(inout self, depth: Int, alpha: Float64, beta: Float64, maximizing_player: Bool, player: Int) -> Float64:
+        if depth == 0 or self.check_win_condition():
+            return self.evaluate_board(player)
+
+        if maximizing_player:
+            var max_eval = -inf[DType.float64]()
+            var moves = self.get_possible_moves(player)
+            for i in range(len(moves)):
+                var move = moves[i]
+                self.make_move(move, player)
+                var eval = self.minimax(depth - 1, alpha, beta, False, player)
+                self.undo_move(move, player)
+                max_eval = max(max_eval, eval)
+                var alpha = max(alpha, eval)
+                if beta <= alpha:
+                    break
+            return max_eval
+        else:
+            var min_eval = inf[DType.float64]()
+            var opponent = 3 if player == 2 else 2
+            var moves = self.get_possible_moves(opponent)
+            for i in range(len(moves)):
+                var move = moves[i]
+                self.make_move(move, opponent)
+                var eval = self.minimax(depth - 1, alpha, beta, True, player)
+                self.undo_move(move, player)
+                min_eval = min(min_eval, eval)
+                var beta = min(beta, eval)
+                if beta <= alpha:
+                    break
+            return min_eval
+
+    fn make_move(inout self, move: Move, player: Int):
+        self.board[move.to_row][move.to_col] = player
+        self.board[move.from_row][move.from_col] = 1
+
+    fn undo_move(inout self, move: Move, player: Int):
+        self.board[move.from_row][move.from_col] = player
+        self.board[move.to_row][move.to_col] = 1
+
+    fn ai_move(inout self, player: Int) -> Bool:
+        var infinity = inf[DType.float64]()
+        var negative_infinity = neg_inf[DType.float64]()
+        var best_score = negative_infinity
+        var best_move: Move = Move(-1, -1, -1, -1)  # Initialize with invalid move
+
+        var moves = self.get_possible_moves(player)
+        for i in range(len(moves)):
+            var move = moves[i]
+            self.make_move(move, player)
+            var score = self.minimax(3, negative_infinity, infinity, False, player)  # Depth of 3
+            self.undo_move(move, player)
+
+            if score > best_score:
+                best_score = score
+                best_move = move
+
+        if best_move.from_row != -1:  # Check if a valid move was found
+            self.make_move(best_move, player)
+            print("AI moved from (", best_move.from_row, ",", best_move.from_col, 
+                ") to (", best_move.to_row, ",", best_move.to_col, ")")
+            return True
+
+        return False
+
+    fn get_possible_fly_moves(self, player: Int) -> List[Move]:
+        var moves = List[Move]()
+        for from_row in range(7):
+            for from_col in range(7):
+                if self.board[from_row][from_col] == player:
+                    for to_row in range(7):
+                        for to_col in range(7):
+                            if self.is_valid_position(to_row, to_col) and self.board[to_row][to_col] == 1:  # 1 represents an empty spot
+                                moves.append(Move(from_row, from_col, to_row, to_col))
+        return moves
+
+    fn ai_fly(inout self, player: Int) -> Bool:
+        var infinity = inf[DType.float64]()
+        var negative_infinity = neg_inf[DType.float64]()
+        var best_score = negative_infinity
+        var best_move: Move = Move(-1, -1, -1, -1)  # Initialize with invalid move
+
+        var moves = self.get_possible_fly_moves(player)
+        for i in range(len(moves)):
+            var move = moves[i]
+            self.make_move(move, player)
+            var score = self.minimax(3, negative_infinity, infinity, False, player)  # Depth of 3
+            self.undo_move(move, player)
+
+            if score > best_score:
+                best_score = score
+                best_move = move
+
+        if best_move.from_row != -1:  # Check if a valid move was found
+            self.make_move(best_move, player)
+            print("AI flew from (", best_move.from_row, ",", best_move.from_col, 
+                ") to (", best_move.to_row, ",", best_move.to_col, ")")
+            return True
+
         return False
