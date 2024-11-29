@@ -1,7 +1,7 @@
 [project]
 authors = ["zbornak <zbornak@protonmail.com>"]
 channels = ["conda-forge", "https://conda.modular.com/max"]
-description = "Add a short description here"
+description = "A traditional 2-player strategy game from South Africa"
 name = "morabaraba_v2"
 platforms = ["osx-arm64"]
 version = "0.1.0"

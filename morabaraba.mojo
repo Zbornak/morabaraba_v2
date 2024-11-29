@@ -24,27 +24,34 @@ fn play_game(inout game: MorabarabaBoard) raises:
 
         if not game.has_valid_moves(current_player):
             print("player ", current_player - 1, " has no valid moves and loses the game")
-            print("thank-you")
+            print("thank-you for playing, hamba kahle")
             break
+
+        var move_successful: Bool
+        var mill_formed: Bool
 
         if current_player == ai_player:
             # AI's turn
             if game.count_player_cows(current_player) > 3:
-                if game.ai_move(current_player):
-                    game.print_board()
+                (move_successful, mill_formed) = game.ai_move(current_player)
             else:
                 print("AI player has only 3 cows left and they can now fly")
-                if game.ai_fly(current_player):
-                    game.print_board()
+                (move_successful, mill_formed) = game.ai_fly(current_player)
         else:
             # Human player's turn
             if game.count_player_cows(current_player) > 3:
-                if game.move_cow(current_player):
-                    game.print_board()
+                (move_successful, mill_formed) = game.move_cow(current_player)
             else:
                 print("player ", current_player - 1, " has only 3 cows left and they can now fly")
-                if game.fly_cow(current_player):
-                    game.print_board()
+                (move_successful, mill_formed) = game.fly_cow(current_player)
+
+        if move_successful:
+            game.print_board()
+            if mill_formed:
+                print("Mill formed! A cow will be removed.")
+            current_player = ai_player if current_player == 2 else 2
+        else:
+            print("Failed to make a move, trying again")
 
         if game.check_win_condition():
             break
@@ -57,10 +64,8 @@ fn play_game(inout game: MorabarabaBoard) raises:
             game.moves_since_last_shot += 1
             if game.moves_since_last_shot >= 10:
                 print("draw")
-                print("thank-you for")
+                print("thank-you for playing, hamba kahle")
                 break
-
-        current_player = 3 if current_player == 2 else 2
 
 fn main() raises:
     print_intro()

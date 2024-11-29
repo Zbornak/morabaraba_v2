@@ -193,24 +193,24 @@ struct MorabarabaBoard:
     # 1 is unowned
     # 2 is player 1
     # 3 is player 2
-    fn place_cow(inout self, player: Int) raises -> Bool:
+    fn place_cow(inout self, player: Int) raises -> (Bool, Bool):
         if self.count_placed_cows(player) >= 12:
             print("you have already placed all 12 of your cows")
-            return False
+            return (False, False)
 
         var opponent = 3 if player == 2 else 2  # assuming player 2 and 3
-        
+
         print("player ", player - 1, ", choose where to place your cow")
         print("enter the row and column (0-6) separated by a space:")
 
         while True:
             var input_str = self.get_input()
             var input_parts = input_str.split()
-            
+
             if len(input_parts) != 2:
                 print("invalid input. please enter two numbers separated by a space")
                 continue
-            
+
             var row: Int
             var col: Int
             try:
@@ -230,11 +230,14 @@ struct MorabarabaBoard:
                         _ = self.shoot_opponent_cow(player)
                     except:
                         print("unable to shoot opponent cow")
-                return True
+                    return (True, True)
+                return (True, False)
             else:
                 print("invalid position. please choose an empty, valid position")
 
-    fn move_cow(inout self, player: Int) raises -> Bool:
+        #return (False, False)  # This line should never be reached, but it's good practice to have it
+
+    fn move_cow(inout self, player: Int) raises -> (Bool, Bool):
         #var opponent = 3 if player == 2 else 2  # assuming player 2 and 3
 
         print("player ", player - 1, ", choose a cow to move")
@@ -275,14 +278,17 @@ struct MorabarabaBoard:
             self.board[to_row][to_col] = player
             self.board[from_row][from_col] = 1  # set the 'from' position to empty
 
-            if self.is_in_mill(to_row, to_col, player):
+            var mill_formed = self.is_in_mill(to_row, to_col, player)
+            if mill_formed:
                 print("Player", player - 1, "formed a mill")
                 try:
                     _ = self.shoot_opponent_cow(player)
                 except:
                     print("Unable to remove opponent cow")
 
-            return True
+            return (True, mill_formed)
+
+        # return (False, False)
 
     fn is_valid_adjacent_position(self, row: Int, col: Int) -> Bool:
         return (row == 0 and (col == 0 or col == 3 or col == 6)) or
@@ -329,7 +335,7 @@ struct MorabarabaBoard:
 
         return False
 
-    fn fly_cow(inout self, player: Int) raises -> Bool:
+    fn fly_cow(inout self, player: Int) raises -> (Bool, Bool):
         #var opponent = 3 if player == 2 else 2  # Assuming player 2 and 3
 
         print("player ", player - 1, ", choose a cow to fly")
@@ -371,14 +377,15 @@ struct MorabarabaBoard:
             self.board[to_row][to_col] = player
             self.board[from_row][from_col] = 1  # Set the 'from' position to empty
 
-            if self.is_in_mill(to_row, to_col, player):
+            var mill_formed = self.is_in_mill(to_row, to_col, player)
+            if mill_formed:
                 print("player", player - 1, "formed a mill")
                 try:
                     _ = self.shoot_opponent_cow(player)
                 except:
                     print("unable to remove opponent cow")
 
-            return True
+            return (True, mill_formed)
 
     fn shoot_opponent_cow(inout self, player: Int) raises -> Bool:
         var opponent = 3 if player == 2 else 2  # assuming player 2 and 3
@@ -460,15 +467,20 @@ struct MorabarabaBoard:
 
             print("Player ", current_player - 1, " (", self.count_placed_cows(current_player), "/12 cows placed)")
             
-            var placement_successful = False
+            var placement_successful: Bool
+            var mill_formed: Bool
             if current_player == ai_player:
-                placement_successful = self.ai_place_cow(current_player)
+                (placement_successful, mill_formed) = self.ai_place_cow(current_player)
             else:
-                placement_successful = self.place_cow(current_player)
+                (placement_successful, mill_formed) = self.place_cow(current_player)
             
             if placement_successful:
                 self.print_board()
+                if mill_formed:
+                    print("Mill formed! A cow will be removed.")
                 current_player = ai_player if current_player == 2 else 2
+            else:
+                print("Failed to place cow, trying again")
             
         print("Placement phase complete. Moving to the movement phase")
 
@@ -483,19 +495,19 @@ struct MorabarabaBoard:
         if self.is_valid_position(row, col):
             self.board[row][col] = 1  # Set back to empty
 
-    fn ai_place_cow(inout self, player: Int) -> Bool:
+    fn ai_place_cow(inout self, player: Int) -> (Bool,Bool):
         print("AI attempting to place cow. Current count:", self.count_placed_cows(player))
 
         if self.count_placed_cows(player) >= 12:
             print("AI has already placed all 12 of its cows")
-            return False
+            return (False, False)
 
         var placements = self.get_possible_placements(player)
         print("Number of possible placements:", len(placements))
 
         if len(placements) == 0:
             print("No valid placements available for AI")
-            return False
+            return (False, False)
 
         var best_score = -inf[DType.float64]()
         var best_move: Move = Move(-1, -1, -1, -1)
@@ -519,10 +531,11 @@ struct MorabarabaBoard:
             if self.is_in_mill(best_move.to_row, best_move.to_col, player):
                 print("AI got a mill")
                 _ = self.ai_shoot_opponent_cow(player)
-            return True
+                return (True, True)
+            return (True, False)
         else:
             print("AI failed to find a valid move")
-            return False
+            return (False, False)
         
     fn get_possible_placements(self, player: Int) -> List[Move]:
         var placements = List[Move]()
@@ -761,7 +774,7 @@ struct MorabarabaBoard:
         self.board[move.from_row][move.from_col] = player
         self.board[move.to_row][move.to_col] = 1
 
-    fn ai_move(inout self, player: Int) -> Bool:
+    fn ai_move(inout self, player: Int) -> (Bool, Bool):
         var infinity = inf[DType.float64]()
         var negative_infinity = neg_inf[DType.float64]()
         var best_score = negative_infinity
@@ -782,9 +795,16 @@ struct MorabarabaBoard:
             self.make_move(best_move, player)
             print("AI moved from (", best_move.from_row, ",", best_move.from_col, 
                 ") to (", best_move.to_row, ",", best_move.to_col, ")")
-            return True
+            
+            # Check if the move formed a mill
+            var mill_formed = self.is_in_mill(best_move.to_row, best_move.to_col, player)
+            if mill_formed:
+                print("AI formed a mill!")
+                _ = self.ai_shoot_opponent_cow(player)
+            
+            return (True, mill_formed)
 
-        return False
+        return (False, False)
 
     fn get_possible_fly_moves(self, player: Int) -> List[Move]:
         var moves = List[Move]()
@@ -797,7 +817,7 @@ struct MorabarabaBoard:
                                 moves.append(Move(from_row, from_col, to_row, to_col))
         return moves
 
-    fn ai_fly(inout self, player: Int) -> Bool:
+    fn ai_fly(inout self, player: Int) -> (Bool, Bool):
         var infinity = inf[DType.float64]()
         var negative_infinity = neg_inf[DType.float64]()
         var best_score = negative_infinity
@@ -818,6 +838,13 @@ struct MorabarabaBoard:
             self.make_move(best_move, player)
             print("AI flew from (", best_move.from_row, ",", best_move.from_col, 
                 ") to (", best_move.to_row, ",", best_move.to_col, ")")
-            return True
+            
+            # Check if the move formed a mill
+            var mill_formed = self.is_in_mill(best_move.to_row, best_move.to_col, player)
+            if mill_formed:
+                print("AI formed a mill!")
+                _ = self.ai_shoot_opponent_cow(player)
+            
+            return (True, mill_formed)
 
-        return False
+        return (False, False)
