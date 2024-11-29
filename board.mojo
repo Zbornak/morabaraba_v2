@@ -454,23 +454,22 @@ struct MorabarabaBoard:
         var ai_player = 3       # AI is player 3
 
         while self.count_placed_cows(2) < 12 or self.count_placed_cows(3) < 12:
+            if self.count_placed_cows(current_player) >= 12:
+                current_player = ai_player if current_player == 2 else 2
+                continue
+
             print("Player ", current_player - 1, " (", self.count_placed_cows(current_player), "/12 cows placed)")
             
+            var placement_successful = False
             if current_player == ai_player:
-                if self.ai_place_cow(current_player):
-                    self.print_board()
-                else:
-                    print("AI failed to place a cow, trying again")
-                    continue
+                placement_successful = self.ai_place_cow(current_player)
             else:
-                if self.place_cow(current_player):
-                    self.print_board()
-                else:
-                    print("Failed to place cow, trying again")
-                    continue
+                placement_successful = self.place_cow(current_player)
             
-            current_player = ai_player if current_player == 2 else 2
-
+            if placement_successful:
+                self.print_board()
+                current_player = ai_player if current_player == 2 else 2
+            
         print("Placement phase complete. Moving to the movement phase")
 
     fn place_ai_cow(inout self, row: Int, col: Int, player: Int) -> Bool:
@@ -485,34 +484,45 @@ struct MorabarabaBoard:
             self.board[row][col] = 1  # Set back to empty
 
     fn ai_place_cow(inout self, player: Int) -> Bool:
+        print("AI attempting to place cow. Current count:", self.count_placed_cows(player))
+
         if self.count_placed_cows(player) >= 12:
             print("AI has already placed all 12 of its cows")
+            return False
+
+        var placements = self.get_possible_placements(player)
+        print("Number of possible placements:", len(placements))
+
+        if len(placements) == 0:
+            print("No valid placements available for AI")
             return False
 
         var best_score = -inf[DType.float64]()
         var best_move: Move = Move(-1, -1, -1, -1)
 
-        var placements = self.get_possible_placements(player)
         for i in range(len(placements)):
             var move = placements[i]
             self.board[move.to_row][move.to_col] = player
-            var score = self.minimax(3, -inf[DType.float64](), inf[DType.float64](), False, player, True)  # Depth of 3, is_placing_phase = True
+            var score = self.minimax(2, -inf[DType.float64](), inf[DType.float64](), False, player, True)
             self.board[move.to_row][move.to_col] = 1  # Set back to empty
+
+            print("Evaluated move:", move.to_row, move.to_col, "with score:", score)
 
             if score > best_score:
                 best_score = score
                 best_move = move
 
-        if best_move.to_row != -1:
-            self.board[best_move.to_row][best_move.to_col] = player
-            self.total_cows_placed[player - 2] += 1  # increment total cows placed
-            print("AI placed a cow at row", best_move.to_row, "col", best_move.to_col)
+            if best_move.to_row != -1:
+                self.board[best_move.to_row][best_move.to_col] = player
+                self.total_cows_placed[player - 2] += 1
+                print("AI placed a cow at row", best_move.to_row, "col", best_move.to_col)
             if self.is_in_mill(best_move.to_row, best_move.to_col, player):
                 print("AI got a mill")
                 _ = self.ai_shoot_opponent_cow(player)
             return True
-
-        return False
+        else:
+            print("AI failed to find a valid move")
+            return False
         
     fn get_possible_placements(self, player: Int) -> List[Move]:
         var placements = List[Move]()
