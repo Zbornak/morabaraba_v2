@@ -67,6 +67,8 @@ fn play_game(inout game: MorabarabaBoard) raises:
                 print("thank-you for playing, hamba kahle")
                 break
 
+    current_player = ai_player if current_player == 2 else 2
+
 fn main() raises:
     print_intro()
     var game = MorabarabaBoard()
