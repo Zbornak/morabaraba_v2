@@ -581,12 +581,10 @@ struct MorabarabaBoard:
         
         return False
 
-
-    # Impi
     fn evaluate_board(self, player: Int) -> Int:
         var opponent = 3 if player == 2 else 2
         var score = 0
-        
+
         # Count pieces
         var player_pieces = self.count_player_cows(player)
         var opponent_pieces = self.count_player_cows(opponent)
@@ -597,11 +595,65 @@ struct MorabarabaBoard:
         var opponent_mills = self.count_mills(opponent)
         score += (player_mills - opponent_mills) * 50
 
+        # Check potential mills and strategic positions
+        for row in range(7):
+            for col in range(7):
+                if self.board[row][col] == player:
+                    score += self.evaluate_position(row, col, player)
+                elif self.board[row][col] == opponent:
+                    score -= self.evaluate_position(row, col, opponent)
+
         # Bonus for controlling center positions
         if self.board[3][3] == player:
             score += 5
 
         return score
+
+    fn evaluate_position(self, row: Int, col: Int, player: Int) -> Int:
+        var value = 0
+
+        # Check for potential mills
+        if self.is_part_of_potential_mill(row, col, player):
+            value += 3
+
+        # Value corner positions
+        if (row == 0 or row == 6) and (col == 0 or col == 6):
+            value += 2
+        # Value edge middle positions
+        if (row == 0 or row == 6 or col == 0 or col == 6) and (row == 3 or col == 3):
+            value += 1
+
+        return value
+
+    fn is_part_of_potential_mill(self, row: Int, col: Int, player: Int) -> Bool:
+        # Check horizontal
+        if col == 0 and self.board[row][3] == player and self.board[row][6] == 1:
+            return True
+        if col == 3 and ((self.board[row][0] == player and self.board[row][6] == 1) or 
+                        (self.board[row][6] == player and self.board[row][0] == 1)):
+            return True
+        if col == 6 and self.board[row][0] == player and self.board[row][3] == 1:
+            return True
+
+        # Check vertical
+        if row == 0 and self.board[3][col] == player and self.board[6][col] == 1:
+            return True
+        if row == 3 and ((self.board[0][col] == player and self.board[6][col] == 1) or 
+                        (self.board[6][col] == player and self.board[0][col] == 1)):
+            return True
+        if row == 6 and self.board[0][col] == player and self.board[3][col] == 1:
+            return True
+
+        # Check diagonals (for positions that are part of diagonals)
+        if (row == col or row + col == 6) and row % 3 == 0:
+            var other1 = (row + 3) % 9
+            var other2 = (row + 6) % 9
+            if self.board[other1 // 3][other1 % 3] == player and self.board[other2 // 3][other2 % 3] == 1:
+                return True
+            if self.board[other2 // 3][other2 % 3] == player and self.board[other1 // 3][other1 % 3] == 1:
+                return True
+
+        return False
 
     fn count_mills(self, player: Int) -> Int:
         var mills = 0
