@@ -453,14 +453,11 @@ struct MorabarabaBoard:
 
     fn placement_phase(inout self) raises:
         var current_player = 2  # start with player 2
-        var ai_player = 3       # AI is player 3
+        var ai_player = 3       # impi is player 3
 
-        while self.count_placed_cows(2) < 12 or self.count_placed_cows(3) < 12:
-            if self.count_placed_cows(current_player) >= 12:
-                current_player = ai_player if current_player == 2 else 2
-                continue
-
+        while self.count_placed_cows(2) < 12 and self.count_placed_cows(3) < 12:
             print("player ", current_player - 1, " (", self.count_placed_cows(current_player), "/12 cows placed)")
+            print("Total cows on board:", self.count_player_cows(2) + self.count_player_cows(3))
             
             var placement_successful: Bool
             var mill_formed: Bool
@@ -472,12 +469,12 @@ struct MorabarabaBoard:
             if placement_successful:
                 self.print_board()
                 if mill_formed:
-                    print("mill formed. a cow will be shot.")
+                    print("Mill formed! A cow will be shot.")
                 current_player = ai_player if current_player == 2 else 2
             else:
-                print("failed to place cow, trying again...")
+                print("Failed to place cow, trying again...")
             
-        print("placement phase complete, mooving to the movement phase")
+        print("Placement phase complete, moving to the movement phase")
 
     fn place_impi_cow(inout self, row: Int, col: Int, player: Int) -> Bool:
         if self.is_valid_position(row, col) and self.board[row][col] == 1:  # assuming 1 represents an empty spot
@@ -510,7 +507,7 @@ struct MorabarabaBoard:
         for i in range(len(placements)):
             var move = placements[i]
             var score = self.evaluate_placement(move.to_row, move.to_col, player)
-            print("Evaluated move:", move.to_row, move.to_col, "with score:", score)
+            print("evaluated move:", move.to_row, move.to_col, "with score:", score)
             if score > best_score:
                 best_score = score
                 best_move = move
@@ -660,7 +657,7 @@ struct MorabarabaBoard:
             for col in range(7):
                 if self.board[row][col] == opponent and not self.is_in_mill(row, col, opponent):
                     self.board[row][col] = 1  # temporarily remove opponent's cow
-                    var score = self.minimax(2, -inf[DType.float64](), inf[DType.float64](), False, player, True)  # depth of 2
+                    var score = self.minimax(2, -inf[DType.float64](), inf[DType.float64](), False, player, False)  # depth of 2, not in placing phase
                     self.board[row][col] = opponent  # put the cow back
 
                     if score > best_score:
@@ -669,6 +666,7 @@ struct MorabarabaBoard:
 
         if best_move.to_row != -1:
             self.board[best_move.to_row][best_move.to_col] = 1  # remove the opponent's cow
+            self.total_cows_placed[opponent - 2] -= 1  # decrement the opponent's cow count
             print("Impi removed opponent's cow at row", best_move.to_row, "col", best_move.to_col)
             return True
 
