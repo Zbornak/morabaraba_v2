@@ -483,7 +483,7 @@ struct MorabarabaBoard:
             return True
         return False
 
-    fn remove_cow(inout self, row: Int, col: Int):
+    fn impi_shoot_opponent_cow(inout self, row: Int, col: Int):
         if self.is_valid_position(row, col):
             self.board[row][col] = 1  # set back to empty
 
@@ -494,7 +494,7 @@ struct MorabarabaBoard:
             print("Impi has already placed all 12 of its cows")
             return (False, False)
 
-        var placements = self.get_possible_placements(player)
+        var placements = self.impi_get_possible_placements(player)
         print("number of possible placements:", len(placements))
 
         if len(placements) == 0:
@@ -529,7 +529,7 @@ struct MorabarabaBoard:
             print("Impi failed to find a valid move")
             return (False, False)
         
-    fn get_possible_placements(self, player: Int) -> List[Move]:
+    fn impi_get_possible_placements(self, player: Int) -> List[Move]:
         var placements = List[Move]()
         for row in range(7):
             for col in range(7):
@@ -682,7 +682,7 @@ struct MorabarabaBoard:
         var opponent = 3 if player == 2 else 2
 
         if is_placing_phase:
-            moves = self.get_possible_placements(player if maximizing_player else opponent)
+            moves = self.impi_get_possible_placements(player if maximizing_player else opponent)
         else:
             moves = self.get_possible_moves(player if maximizing_player else opponent)
         if maximizing_player:
@@ -697,7 +697,7 @@ struct MorabarabaBoard:
                 var eval = self.minimax(depth - 1, alpha, beta, False, player, is_placing_phase)
 
                 if is_placing_phase:
-                    self.remove_cow(move.to_row, move.to_col)
+                    self.impi_shoot_opponent_cow(move.to_row, move.to_col)
                 else:
                     self.undo_move(move, player)
 
@@ -718,7 +718,7 @@ struct MorabarabaBoard:
                 var eval = self.minimax(depth - 1, alpha, beta, True, player, is_placing_phase)
 
                 if is_placing_phase:
-                    self.remove_cow(move.to_row, move.to_col)
+                    self.impi_shoot_opponent_cow(move.to_row, move.to_col)
                 else:
                     self.undo_move(move, player)
 
