@@ -33,10 +33,10 @@ fn play_game(inout game: MorabarabaBoard) raises:
         if current_player == ai_player:
             # AI's turn
             if game.count_player_cows(current_player) > 3:
-                (move_successful, mill_formed) = game.ai_move(current_player)
+                (move_successful, mill_formed) = game.impi_move(current_player)
             else:
                 print("AI player has only 3 cows left and they can now fly")
-                (move_successful, mill_formed) = game.ai_fly(current_player)
+                (move_successful, mill_formed) = game.impi_fly(current_player)
         else:
             # Human player's turn
             if game.count_player_cows(current_player) > 3:

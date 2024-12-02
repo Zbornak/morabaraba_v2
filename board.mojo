@@ -235,11 +235,7 @@ struct MorabarabaBoard:
             else:
                 print("invalid position. please choose an empty, valid position")
 
-        #return (False, False)  # This line should never be reached, but it's good practice to have it
-
     fn move_cow(inout self, player: Int) raises -> (Bool, Bool):
-        #var opponent = 3 if player == 2 else 2  # assuming player 2 and 3
-
         print("player ", player - 1, ", choose a cow to move")
         print("enter the current row and column (0-6) of your cow, then the destination row and column, all separated by spaces:")
 
@@ -280,15 +276,13 @@ struct MorabarabaBoard:
 
             var mill_formed = self.is_in_mill(to_row, to_col, player)
             if mill_formed:
-                print("Player", player - 1, "formed a mill")
+                print("player", player - 1, "formed a mill")
                 try:
                     _ = self.shoot_opponent_cow(player)
                 except:
-                    print("Unable to remove opponent cow")
+                    print("unable to shoot opponent cow")
 
             return (True, mill_formed)
-
-        # return (False, False)
 
     fn is_valid_adjacent_position(self, row: Int, col: Int) -> Bool:
         return (row == 0 and (col == 0 or col == 3 or col == 6)) or
@@ -336,8 +330,6 @@ struct MorabarabaBoard:
         return False
 
     fn fly_cow(inout self, player: Int) raises -> (Bool, Bool):
-        #var opponent = 3 if player == 2 else 2  # Assuming player 2 and 3
-
         print("player ", player - 1, ", choose a cow to fly")
         print("enter the current row and column (0-6) of your cow, then the destination row and column, all separated by spaces:")
 
@@ -346,7 +338,7 @@ struct MorabarabaBoard:
             var input_parts = input_str.split()
 
             if len(input_parts) != 4:
-                print("invalid input. Please enter four numbers separated by spaces")
+                print("invalid input. please enter four numbers separated by spaces")
                 continue
 
             var from_row: Int
@@ -359,7 +351,7 @@ struct MorabarabaBoard:
                 to_row = atol(input_parts[2])
                 to_col = atol(input_parts[3])
             except:
-                print("invalid input. Please enter valid numbers")
+                print("invalid input. please enter valid numbers")
                 continue
 
             if not self.is_valid_position(from_row, from_col) or not self.is_valid_position(to_row, to_col):
@@ -370,12 +362,12 @@ struct MorabarabaBoard:
                 print("invalid move: no cow at the starting position")
                 continue
 
-            if self.board[to_row][to_col] != 1:  # Assuming 1 represents an empty position
+            if self.board[to_row][to_col] != 1:  # assuming 1 represents an empty position
                 print("invalid move: destination is not empty")
                 continue
 
             self.board[to_row][to_col] = player
-            self.board[from_row][from_col] = 1  # Set the 'from' position to empty
+            self.board[from_row][from_col] = 1  # set the 'from' position to empty
 
             var mill_formed = self.is_in_mill(to_row, to_col, player)
             if mill_formed:
@@ -383,7 +375,7 @@ struct MorabarabaBoard:
                 try:
                     _ = self.shoot_opponent_cow(player)
                 except:
-                    print("unable to remove opponent cow")
+                    print("unable to shoot opponent cow")
 
             return (True, mill_formed)
 
@@ -433,7 +425,7 @@ struct MorabarabaBoard:
                 continue
             
             self.board[row][col] = 1
-            print("Shot opponent's cow at row ", row, ", col ", col)
+            print("shot opponent's cow at row ", row, ", col ", col)
             self.moves_since_last_shot = 0  # reset the counter
             return True
 
@@ -465,27 +457,27 @@ struct MorabarabaBoard:
                 current_player = ai_player if current_player == 2 else 2
                 continue
 
-            print("Player ", current_player - 1, " (", self.count_placed_cows(current_player), "/12 cows placed)")
+            print("player ", current_player - 1, " (", self.count_placed_cows(current_player), "/12 cows placed)")
             
             var placement_successful: Bool
             var mill_formed: Bool
             if current_player == ai_player:
-                (placement_successful, mill_formed) = self.ai_place_cow(current_player)
+                (placement_successful, mill_formed) = self.impi_place_cow(current_player)
             else:
                 (placement_successful, mill_formed) = self.place_cow(current_player)
             
             if placement_successful:
                 self.print_board()
                 if mill_formed:
-                    print("Mill formed! A cow will be removed.")
+                    print("mill formed. a cow will be shot.")
                 current_player = ai_player if current_player == 2 else 2
             else:
-                print("Failed to place cow, trying again")
+                print("failed to place cow, trying again...")
             
-        print("Placement phase complete. Moving to the movement phase")
+        print("placement phase complete, mooving to the movement phase")
 
-    fn place_ai_cow(inout self, row: Int, col: Int, player: Int) -> Bool:
-        if self.is_valid_position(row, col) and self.board[row][col] == 1:  # Assuming 1 represents an empty spot
+    fn place_impi_cow(inout self, row: Int, col: Int, player: Int) -> Bool:
+        if self.is_valid_position(row, col) and self.board[row][col] == 1:  # assuming 1 represents an empty spot
             self.board[row][col] = player
             self.total_cows_placed[player - 2] += 1  # increment total cows placed
             return True
@@ -493,20 +485,20 @@ struct MorabarabaBoard:
 
     fn remove_cow(inout self, row: Int, col: Int):
         if self.is_valid_position(row, col):
-            self.board[row][col] = 1  # Set back to empty
+            self.board[row][col] = 1  # set back to empty
 
-    fn ai_place_cow(inout self, player: Int) -> (Bool,Bool):
-        print("AI attempting to place cow. Current count:", self.count_placed_cows(player))
+    fn impi_place_cow(inout self, player: Int) -> (Bool,Bool):
+        print("Impi attempting to place cow. current count:", self.count_placed_cows(player))
 
         if self.count_placed_cows(player) >= 12:
-            print("AI has already placed all 12 of its cows")
+            print("Impi has already placed all 12 of its cows")
             return (False, False)
 
         var placements = self.get_possible_placements(player)
-        print("Number of possible placements:", len(placements))
+        print("number of possible placements:", len(placements))
 
         if len(placements) == 0:
-            print("No valid placements available for AI")
+            print("no valid placements available for Impi")
             return (False, False)
 
         var best_score = -inf[DType.float64]()
@@ -516,9 +508,9 @@ struct MorabarabaBoard:
             var move = placements[i]
             self.board[move.to_row][move.to_col] = player
             var score = self.minimax(2, -inf[DType.float64](), inf[DType.float64](), False, player, True)
-            self.board[move.to_row][move.to_col] = 1  # Set back to empty
+            self.board[move.to_row][move.to_col] = 1  # set back to empty
 
-            print("Evaluated move:", move.to_row, move.to_col, "with score:", score)
+            print("evaluated move:", move.to_row, move.to_col, "with score:", score)
 
             if score > best_score:
                 best_score = score
@@ -527,25 +519,25 @@ struct MorabarabaBoard:
             if best_move.to_row != -1:
                 self.board[best_move.to_row][best_move.to_col] = player
                 self.total_cows_placed[player - 2] += 1
-                print("AI placed a cow at row", best_move.to_row, "col", best_move.to_col)
+                print("Impi placed a cow at row", best_move.to_row, "col", best_move.to_col)
             if self.is_in_mill(best_move.to_row, best_move.to_col, player):
-                print("AI got a mill")
-                _ = self.ai_shoot_opponent_cow(player)
+                print("Impi got a mill")
+                _ = self.impi_shoot_opponent_cow(player)
                 return (True, True)
             return (True, False)
         else:
-            print("AI failed to find a valid move")
+            print("Impi failed to find a valid move")
             return (False, False)
         
     fn get_possible_placements(self, player: Int) -> List[Move]:
         var placements = List[Move]()
         for row in range(7):
             for col in range(7):
-                if self.is_valid_position(row, col) and self.board[row][col] == 1:  # Assuming 1 represents an empty spot
-                    placements.append(Move(-1, -1, row, col))  # Use -1, -1 for 'from' position as it's not applicable for placement
+                if self.is_valid_position(row, col) and self.board[row][col] == 1:  # assuming 1 represents an empty spot
+                    placements.append(Move(-1, -1, row, col))  # use -1, -1 for 'from' position as it's not applicable for placement
         return placements
 
-    fn ai_shoot_opponent_cow(inout self, player: Int) -> Bool:
+    fn impi_shoot_opponent_cow(inout self, player: Int) -> Bool:
         var opponent = 3 if player == 2 else 2
         var best_score = -inf[DType.float64]()
         var best_move: Move = Move(-1, -1, -1, -1)
@@ -553,17 +545,17 @@ struct MorabarabaBoard:
         for row in range(7):
             for col in range(7):
                 if self.board[row][col] == opponent and not self.is_in_mill(row, col, opponent):
-                    self.board[row][col] = 1  # Temporarily remove opponent's cow
-                    var score = self.minimax(2, -inf[DType.float64](), inf[DType.float64](), False, player, True)  # Depth of 2
-                    self.board[row][col] = opponent  # Put the cow back
+                    self.board[row][col] = 1  # temporarily remove opponent's cow
+                    var score = self.minimax(2, -inf[DType.float64](), inf[DType.float64](), False, player, True)  # depth of 2
+                    self.board[row][col] = opponent  # put the cow back
 
                     if score > best_score:
                         best_score = score
                         best_move = Move(-1, -1, row, col)
 
         if best_move.to_row != -1:
-            self.board[best_move.to_row][best_move.to_col] = 1  # Remove the opponent's cow
-            print("AI removed opponent's cow at row", best_move.to_row, "col", best_move.to_col)
+            self.board[best_move.to_row][best_move.to_col] = 1  # remove the opponent's cow
+            print("Impi removed opponent's cow at row", best_move.to_row, "col", best_move.to_col)
             return True
 
         return False
@@ -608,17 +600,17 @@ struct MorabarabaBoard:
         var opponent = 3 if player == 2 else 2
         var score = 0
 
-        # Count pieces
+        # count pieces
         var player_pieces = self.count_player_cows(player)
         var opponent_pieces = self.count_player_cows(opponent)
         score += (player_pieces - opponent_pieces) * 10
 
-        # Count mills
+        # count mills
         var player_mills = self.count_mills(player)
         var opponent_mills = self.count_mills(opponent)
         score += (player_mills - opponent_mills) * 50
 
-        # Check potential mills and strategic positions
+        # check potential mills and strategic positions
         for row in range(7):
             for col in range(7):
                 if self.board[row][col] == player:
@@ -626,7 +618,7 @@ struct MorabarabaBoard:
                 elif self.board[row][col] == opponent:
                     score -= self.evaluate_position(row, col, opponent)
 
-        # Bonus for controlling center positions
+        # bonus for controlling center positions
         if self.board[3][3] == player:
             score += 5
 
@@ -635,48 +627,18 @@ struct MorabarabaBoard:
     fn evaluate_position(self, row: Int, col: Int, player: Int) -> Int:
         var value = 0
 
-        # Check for potential mills
-        if self.is_part_of_potential_mill(row, col, player):
+        # check for potential mills
+        if self.is_in_mill(row, col, player):
             value += 3
 
-        # Value corner positions
+        # value corner positions
         if (row == 0 or row == 6) and (col == 0 or col == 6):
             value += 2
-        # Value edge middle positions
+        # value edge middle positions
         if (row == 0 or row == 6 or col == 0 or col == 6) and (row == 3 or col == 3):
             value += 1
 
         return value
-
-    fn is_part_of_potential_mill(self, row: Int, col: Int, player: Int) -> Bool:
-        # Check horizontal
-        if col == 0 and self.board[row][3] == player and self.board[row][6] == 1:
-            return True
-        if col == 3 and ((self.board[row][0] == player and self.board[row][6] == 1) or 
-                        (self.board[row][6] == player and self.board[row][0] == 1)):
-            return True
-        if col == 6 and self.board[row][0] == player and self.board[row][3] == 1:
-            return True
-
-        # Check vertical
-        if row == 0 and self.board[3][col] == player and self.board[6][col] == 1:
-            return True
-        if row == 3 and ((self.board[0][col] == player and self.board[6][col] == 1) or 
-                        (self.board[6][col] == player and self.board[0][col] == 1)):
-            return True
-        if row == 6 and self.board[0][col] == player and self.board[3][col] == 1:
-            return True
-
-        # Check diagonals (for positions that are part of diagonals)
-        if (row == col or row + col == 6) and row % 3 == 0:
-            var other1 = (row + 3) % 9
-            var other2 = (row + 6) % 9
-            if self.board[other1 // 3][other1 % 3] == player and self.board[other2 // 3][other2 % 3] == 1:
-                return True
-            if self.board[other2 // 3][other2 % 3] == player and self.board[other1 // 3][other1 % 3] == 1:
-                return True
-
-        return False
 
     fn count_mills(self, player: Int) -> Int:
         var mills = 0
@@ -684,22 +646,22 @@ struct MorabarabaBoard:
             for col in range(7):
                 if self.board[row][col] == player and self.is_in_mill(row, col, player):
                     mills += 1
-        return mills // 3  # Divide by 3 as each mill is counted 3 times
+        return mills // 3  # divide by 3 as each mill is counted 3 times
 
     fn is_valid_move(self, from_row: Int, from_col: Int, to_row: Int, to_col: Int, player: Int) -> Bool:
-        # Check if the destination is empty
-        if self.board[to_row][to_col] != 1:  # Assuming 1 represents an empty spot
+        # check if the destination is empty
+        if self.board[to_row][to_col] != 1:  # assuming 1 represents an empty spot
             return False
         
-        # Check if the starting position contains the player's piece
+        # check if the starting position contains the player's cow
         if self.board[from_row][from_col] != player:
             return False
         
-        # If the player has more than 3 pieces, check for adjacency
+        # if the player has more than 3 cows, check for adjacency
         if self.count_player_cows(player) > 3:
             return self.is_adjacent(from_row, from_col, to_row, to_col)
         
-        # If the player has 3 or fewer pieces, they can "fly" to any empty spot
+        # if the player has 3 or fewer cows, they can "fly" to any empty spot
         return self.is_valid_position(to_row, to_col)
 
     fn get_possible_moves(self, player: Int) -> List[Move]:
@@ -728,7 +690,7 @@ struct MorabarabaBoard:
             for i in range(len(moves)):
                 var move = moves[i]
                 if is_placing_phase:
-                    _ = self.place_ai_cow(move.to_row, move.to_col, player)
+                    _ = self.place_impi_cow(move.to_row, move.to_col, player)
                 else:
                     self.make_move(move, player)
 
@@ -749,7 +711,7 @@ struct MorabarabaBoard:
             for i in range(len(moves)):
                 var move = moves[i]
                 if is_placing_phase:
-                    _ = self.place_ai_cow(move.to_row, move.to_col, opponent)
+                    _ = self.place_impi_cow(move.to_row, move.to_col, opponent)
                 else:
                     self.make_move(move, opponent)
 
@@ -774,33 +736,33 @@ struct MorabarabaBoard:
         self.board[move.from_row][move.from_col] = player
         self.board[move.to_row][move.to_col] = 1
 
-    fn ai_move(inout self, player: Int) -> (Bool, Bool):
+    fn impi_move(inout self, player: Int) -> (Bool, Bool):
         var infinity = inf[DType.float64]()
         var negative_infinity = neg_inf[DType.float64]()
         var best_score = negative_infinity
-        var best_move: Move = Move(-1, -1, -1, -1)  # Initialize with invalid move
+        var best_move: Move = Move(-1, -1, -1, -1)  # initialize with invalid move
 
         var moves = self.get_possible_moves(player)
         for i in range(len(moves)):
             var move = moves[i]
             self.make_move(move, player)
-            var score = self.minimax(3, negative_infinity, infinity, False, player, False)  # Depth of 3
+            var score = self.minimax(3, negative_infinity, infinity, False, player, False)  # depth of 3
             self.undo_move(move, player)
 
             if score > best_score:
                 best_score = score
                 best_move = move
 
-        if best_move.from_row != -1:  # Check if a valid move was found
+        if best_move.from_row != -1:  # check if a valid move was found
             self.make_move(best_move, player)
-            print("AI moved from (", best_move.from_row, ",", best_move.from_col, 
+            print("Impi moved from (", best_move.from_row, ",", best_move.from_col, 
                 ") to (", best_move.to_row, ",", best_move.to_col, ")")
             
-            # Check if the move formed a mill
+            # check if the move formed a mill
             var mill_formed = self.is_in_mill(best_move.to_row, best_move.to_col, player)
             if mill_formed:
-                print("AI formed a mill!")
-                _ = self.ai_shoot_opponent_cow(player)
+                print("Impi formed a mill!")
+                _ = self.impi_shoot_opponent_cow(player)
             
             return (True, mill_formed)
 
@@ -817,33 +779,33 @@ struct MorabarabaBoard:
                                 moves.append(Move(from_row, from_col, to_row, to_col))
         return moves
 
-    fn ai_fly(inout self, player: Int) -> (Bool, Bool):
+    fn impi_fly(inout self, player: Int) -> (Bool, Bool):
         var infinity = inf[DType.float64]()
         var negative_infinity = neg_inf[DType.float64]()
         var best_score = negative_infinity
-        var best_move: Move = Move(-1, -1, -1, -1)  # Initialize with invalid move
+        var best_move: Move = Move(-1, -1, -1, -1)  # initialize with invalid move
 
         var moves = self.get_possible_fly_moves(player)
         for i in range(len(moves)):
             var move = moves[i]
             self.make_move(move, player)
-            var score = self.minimax(3, negative_infinity, infinity, False, player, False)  # Depth of 3
+            var score = self.minimax(3, negative_infinity, infinity, False, player, False)  # depth of 3
             self.undo_move(move, player)
 
             if score > best_score:
                 best_score = score
                 best_move = move
 
-        if best_move.from_row != -1:  # Check if a valid move was found
+        if best_move.from_row != -1:  # check if a valid move was found
             self.make_move(best_move, player)
-            print("AI flew from (", best_move.from_row, ",", best_move.from_col, 
+            print("Impi flew from (", best_move.from_row, ",", best_move.from_col, 
                 ") to (", best_move.to_row, ",", best_move.to_col, ")")
             
-            # Check if the move formed a mill
+            # check if the move formed a mill
             var mill_formed = self.is_in_mill(best_move.to_row, best_move.to_col, player)
             if mill_formed:
-                print("AI formed a mill!")
-                _ = self.ai_shoot_opponent_cow(player)
+                print("Impi formed a mill!")
+                _ = self.impi_shoot_opponent_cow(player)
             
             return (True, mill_formed)
 
