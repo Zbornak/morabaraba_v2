@@ -400,6 +400,11 @@ struct MorabarabaBoard:
         
         while True:
             var input_str = self.get_input()
+
+            if input_str.lower() == "cancel":
+                print("shooting cancelled.")
+                return False
+
             var input_parts = input_str.split()
             
             if len(input_parts) != 2:
@@ -418,6 +423,10 @@ struct MorabarabaBoard:
             if row < 0 or row > 6 or col < 0 or col > 6:
                 print("invalid position. row and column must be between 0 and 6")
                 continue
+
+            if not self.is_valid_position(row, col):
+                print("invalid position, this is not a valid spot on the board.")
+                continue
             
             if self.board[row][col] != opponent:
                 print("invalid position. there is no opponent cow at this location")
@@ -428,6 +437,7 @@ struct MorabarabaBoard:
                 continue
             
             self.board[row][col] = 1
+            self.total_cows_placed[opponent - 2] -= 1
             print("shot opponent's cow at row ", row, ", col ", col)
             self.moves_since_last_shot = 0  # reset the counter
             return True
