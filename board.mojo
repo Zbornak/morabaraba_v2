@@ -77,6 +77,9 @@ struct MorabarabaBoard:
                 return input_str
 
     fn check_win_condition(self) -> Bool:
+        if self.count_placed_cows(2) < 12 or self.count_placed_cows(3) < 12:
+            return False  # game can't be won during placement phase
+
         if self.count_player_cows(2) < 3:
             print("player 2 wins. player 2 has fewer than 3 cows. ukuhalalisela!")
             print("thank-you for playing, hamba kahle")
@@ -431,7 +434,7 @@ struct MorabarabaBoard:
 
     fn print_board(self):
         print()
-        print("        0   1   2   3   4   5   6")  # x-axis labels
+        print("        0   1   2   3   4   5   6")  # x-axis label
         print("   -------------------------------")
         print()
         for row in range(7):
@@ -487,18 +490,18 @@ struct MorabarabaBoard:
         if self.is_valid_position(row, col):
             self.board[row][col] = 1  # set back to empty
 
-    fn impi_place_cow(inout self, player: Int) -> (Bool,Bool):
-        print("Impi attempting to place cow. current count:", self.count_placed_cows(player))
-
+    fn impi_place_cow(inout self, player: Int) -> (Bool, Bool):
+        print("Impi attempting to place cow. Current count:", self.count_placed_cows(player))
+        
         if self.count_placed_cows(player) >= 12:
             print("Impi has already placed all 12 of its cows")
             return (False, False)
 
         var placements = self.impi_get_possible_placements(player)
-        print("number of possible placements:", len(placements))
+        print("Number of possible placements:", len(placements))
 
         if len(placements) == 0:
-            print("no valid placements available for Impi")
+            print("No valid placements available for Impi")
             return (False, False)
 
         var best_score = -inf[DType.float64]()
@@ -506,28 +509,139 @@ struct MorabarabaBoard:
 
         for i in range(len(placements)):
             var move = placements[i]
-            self.board[move.to_row][move.to_col] = player
-            var score = self.minimax(2, -inf[DType.float64](), inf[DType.float64](), False, player, True)
-            self.board[move.to_row][move.to_col] = 1  # set back to empty
-
-            print("evaluated move:", move.to_row, move.to_col, "with score:", score)
-
+            var score = self.evaluate_placement(move.to_row, move.to_col, player)
+            print("Evaluated move:", move.to_row, move.to_col, "with score:", score)
             if score > best_score:
                 best_score = score
                 best_move = move
 
-            if best_move.to_row != -1:
-                self.board[best_move.to_row][best_move.to_col] = player
-                self.total_cows_placed[player - 2] += 1
-                print("Impi placed a cow at row", best_move.to_row, "col", best_move.to_col)
-            if self.is_in_mill(best_move.to_row, best_move.to_col, player):
+        if best_move.to_row != -1:
+            self.board[best_move.to_row][best_move.to_col] = player
+            self.total_cows_placed[player - 2] += 1
+            print("Impi placed a cow at row", best_move.to_row, "col", best_move.to_col)
+            
+            var mill_formed = self.is_in_mill(best_move.to_row, best_move.to_col, player)
+            if mill_formed:
                 print("Impi got a mill")
                 _ = self.impi_shoot_opponent_cow(player)
-                return (True, True)
-            return (True, False)
+            return (True, mill_formed)
         else:
             print("Impi failed to find a valid move")
             return (False, False)
+
+    fn evaluate_placement(self, row: Int, col: Int, player: Int) -> Float64:
+        var score: Float64 = 0
+        
+        # Prioritize center and corner positions
+        if (row == 3 and col == 3) or 
+        (row == 0 or row == 6) and (col == 0 or col == 6):
+            score += 3
+        
+        # Create a temporary copy of the board
+        var temp_board = self.board
+        
+        # Make the hypothetical placement
+        var row_tuple = temp_board[row]
+        var new_row = StaticTuple[Int, 7]()
+        for i in range(7):
+            if i == col:
+                new_row[i] = player
+            else:
+                new_row[i] = row_tuple[i]
+        temp_board[row] = new_row
+        
+        # Check for potential mills
+        if self.is_in_mill_temp(row, col, player, temp_board):
+            score += 5
+        
+        return score
+
+    fn is_in_mill_temp(self, row: Int, col: Int, player: Int, temp_board: StaticTuple[StaticTuple[Int, 7], 7]) -> Bool:
+        # Implement the mill checking logic here, using temp_board instead of self.board
+        # This function should be similar to your existing is_in_mill function,
+        # but it takes the temporary board as an argument
+                # top-left diagonal
+        if (row == 0 and col == 0) or (row == 1 and col == 1) or (row == 2 and col == 2):
+            if temp_board[0][0] == player and temp_board[1][1] == player and temp_board[2][2] == player:
+                return True
+        # top-middle down
+        if (row == 0 and col == 3) or (row == 1 and col == 3) or (row == 2 and col == 3):
+            if temp_board[0][3] == player and temp_board[1][3] == player and temp_board[2][3] == player:
+                return True
+        # top-right diagonal
+        if (row == 0 and col == 6) or (row == 1 and col == 5) or (row == 2 and col == 4):
+            if temp_board[0][6] == player and temp_board[1][5] == player and temp_board[2][4] == player:
+                return True
+        # middle-right left
+        if (row == 3 and col == 6) or (row == 3 and col == 5) or (row == 3 and col == 4):
+            if temp_board[3][6] == player and temp_board[3][5] == player and temp_board[3][4] == player:
+                return True
+        # bottom-right diagonal
+        if (row == 6 and col == 6) or (row == 5 and col == 5) or (row == 4 and col == 4):
+            if temp_board[6][6] == player and temp_board[5][5] == player and temp_board[4][4] == player:
+                return True
+        # bottom-middle up
+        if (row == 6 and col == 3) or (row == 5 and col == 3) or (row == 4 and col == 3):
+            if temp_board[6][3] == player and temp_board[5][3] == player and temp_board[4][3] == player:
+                return True
+        # bottom-left diagonal 
+        if (row == 6 and col == 0) or (row == 5 and col == 1) or (row == 4 and col == 2):
+            if temp_board[6][0] == player and temp_board[5][1] == player and temp_board[4][2] == player:
+                return True
+        # middle-left right
+        if (row == 3 and col == 0) or (row == 3 and col == 1) or (row == 3 and col == 2):
+            if temp_board[3][0] == player and temp_board[3][1] == player and temp_board[3][2] == player:
+                return True
+        # 0 row right
+        if (row == 0 and col == 0) or (row == 0 and col == 3) or (row == 0 and col == 6):
+            if temp_board[0][0] == player and temp_board[0][3] == player and temp_board[0][6] == player:
+                return True
+        # 1 row right
+        if (row == 1 and col == 1) or (row == 1 and col == 3) or (row == 1 and col == 5):
+            if temp_board[1][1] == player and temp_board[1][3] == player and temp_board[1][5] == player:
+                return True
+        # 2 row right
+        if (row == 2 and col == 2) or (row == 2 and col == 3) or (row == 2 and col == 4):
+            if temp_board[2][2] == player and temp_board[2][3] == player and temp_board[2][4] == player:
+                return True
+        # 4 row right
+        if (row == 4 and col == 2) or (row == 4 and col == 3) or (row == 4 and col == 4):
+            if temp_board[4][2] == player and temp_board[4][3] == player and temp_board[4][4] == player:
+                return True
+        # 5 row right
+        if (row == 5 and col == 1) or (row == 5 and col == 3) or (row == 5 and col == 5):
+            if temp_board[5][1] == player and temp_board[5][3] == player and temp_board[5][5] == player:
+                return True
+        # 6 row right
+        if (row == 6 and col == 0) or (row == 6 and col == 3) or (row == 6 and col == 6):
+            if temp_board[6][0] == player and temp_board[6][3] == player and temp_board[6][6] == player:
+                return True
+        # 0 column down
+        if (row == 0 and col == 0) or (row == 3 and col == 0) or (row == 6 and col == 0):
+            if temp_board[0][0] == player and temp_board[3][0] == player and temp_board[6][0] == player:
+                return True
+        # 1 column down
+        if (row == 1 and col == 1) or (row == 3 and col == 1) or (row == 5 and col == 1):
+            if temp_board[1][1] == player and temp_board[3][1] == player and temp_board[5][1] == player:
+                return True
+        # 2 column down
+        if (row == 2 and col == 2) or (row == 3 and col == 2) or (row == 4 and col == 2):
+            if temp_board[2][2] == player and temp_board[3][2] == player and temp_board[4][2] == player:
+                return True
+        # 4 column down
+        if (row == 2 and col == 4) or (row == 3 and col == 4) or (row == 4 and col == 4):
+            if temp_board[2][4] == player and temp_board[3][4] == player and temp_board[4][4] == player:
+                return True
+        # 5 column down
+        if (row == 1 and col == 5) or (row == 3 and col == 5) or (row == 5 and col == 5):
+            if temp_board[1][5] == player and temp_board[3][5] == player and temp_board[5][5] == player:
+                return True
+        # 6 column down
+        if (row == 0 and col == 6) or (row == 3 and col == 6) or (row == 6 and col == 6):
+            if temp_board[0][6] == player and temp_board[3][6] == player and temp_board[6][6] == player:
+                return True
+        
+        return False
         
     fn impi_get_possible_placements(self, player: Int) -> List[Move]:
         var placements = List[Move]()
