@@ -670,15 +670,27 @@ struct MorabarabaBoard:
 
     fn impi_shoot_opponent_cow(inout self, player: Int) -> Bool:
         var opponent = 3 if player == 2 else 2
+        print("Impi (player", player - 1, ") is removing a cow of player", opponent - 1)
+        
+        var all_in_mill = True
+        for row in range(7):
+            for col in range(7):
+                if self.board[row][col] == opponent and not self.is_in_mill(row, col, opponent):
+                    all_in_mill = False
+                    break
+            if not all_in_mill:
+                break
+
         var best_score = -inf[DType.float64]()
         var best_move: Move = Move(-1, -1, -1, -1)
 
         for row in range(7):
             for col in range(7):
-                if self.board[row][col] == opponent and not self.is_in_mill(row, col, opponent):
+                if self.board[row][col] == opponent and (not self.is_in_mill(row, col, opponent) or all_in_mill):
                     self.board[row][col] = 1  # temporarily remove opponent's cow
-                    var score = self.minimax(2, -inf[DType.float64](), inf[DType.float64](), False, player, False)  # depth of 2, not in placing phase
+                    var score = self.minimax(2, -inf[DType.float64](), inf[DType.float64](), False, player, False)
                     self.board[row][col] = opponent  # put the cow back
+                    print("Evaluated removing cow at", row, col, "with score:", score)
 
                     if score > best_score:
                         best_score = score
@@ -690,6 +702,7 @@ struct MorabarabaBoard:
             print("Impi removed opponent's cow at row", best_move.to_row, "col", best_move.to_col)
             return True
 
+        print("no valid cow to remove")
         return False
 
     fn count_player_cows(self, player: Int) -> Int:
