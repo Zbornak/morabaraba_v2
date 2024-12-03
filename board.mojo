@@ -104,9 +104,22 @@ struct MorabarabaBoard:
 
     # returns true if player picks a valid position, false if not
     fn is_valid_position(self, row: Int, col: Int) -> Bool:
-        if row < 0 or row >= 7 or col < 0 or col >= 7:
+        if row < 0 or row > 6 or col < 0 or col > 6:
             return False
-        return self.board[row][col] == 1
+        
+        # Check if the position is one of the valid intersections
+        if (row == 0 or row == 3 or row == 6) and (col == 0 or col == 3 or col == 6):
+            return True
+        if (row == 1 or row == 5) and (col == 1 or col == 3 or col == 5):
+            return True
+        if row == 2 and (col == 2 or col == 3 or col == 4):
+            return True
+        if row == 3 and (col == 1 or col == 2 or col == 4 or col == 5):
+            return True
+        if row == 4 and (col == 2 or col == 3 or col == 4):
+            return True
+        
+        return False
         
     fn is_in_mill(self, row: Int, col: Int, player: Int) -> Bool:
         # top-left diagonal
@@ -564,10 +577,7 @@ struct MorabarabaBoard:
         return score
 
     fn is_in_mill_temp(self, row: Int, col: Int, player: Int, temp_board: StaticTuple[StaticTuple[Int, 7], 7]) -> Bool:
-        # Implement the mill checking logic here, using temp_board instead of self.board
-        # This function should be similar to your existing is_in_mill function,
-        # but it takes the temporary board as an argument
-                # top-left diagonal
+        # top-left diagonal
         if (row == 0 and col == 0) or (row == 1 and col == 1) or (row == 2 and col == 2):
             if temp_board[0][0] == player and temp_board[1][1] == player and temp_board[2][2] == player:
                 return True
