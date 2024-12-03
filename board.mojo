@@ -242,6 +242,7 @@ struct MorabarabaBoard:
                 print("placed cow for player", player - 1, "at row", row, "col", col)
                 if self.is_in_mill(row, col, player):
                     print("player", player - 1, "got a mill")
+                    self.print_board()
                     try:
                         _ = self.shoot_opponent_cow(player)
                     except:
@@ -292,7 +293,8 @@ struct MorabarabaBoard:
 
             var mill_formed = self.is_in_mill(to_row, to_col, player)
             if mill_formed:
-                print("player", player - 1, "formed a mill")
+                print("player", player - 1, "got a mill")
+                self.print_board()
                 try:
                     _ = self.shoot_opponent_cow(player)
                 except:
@@ -387,7 +389,8 @@ struct MorabarabaBoard:
 
             var mill_formed = self.is_in_mill(to_row, to_col, player)
             if mill_formed:
-                print("player", player - 1, "formed a mill")
+                print("player", player - 1, "got a mill")
+                self.print_board()
                 try:
                     _ = self.shoot_opponent_cow(player)
                 except:
@@ -492,7 +495,7 @@ struct MorabarabaBoard:
             if placement_successful:
                 self.print_board()
                 if mill_formed:
-                    print("Mill formed! A cow will be shot.")
+                    print("mill formed, a cow will be shot.")
                 current_player = ai_player if current_player == 2 else 2
             else:
                 print("Failed to place cow, trying again...")
@@ -543,6 +546,7 @@ struct MorabarabaBoard:
             var mill_formed = self.is_in_mill(best_move.to_row, best_move.to_col, player)
             if mill_formed:
                 print("Impi got a mill")
+                self.print_board()
                 _ = self.impi_shoot_opponent_cow(player)
             return (True, mill_formed)
         else:
@@ -905,7 +909,8 @@ struct MorabarabaBoard:
             # check if the move formed a mill
             var mill_formed = self.is_in_mill(best_move.to_row, best_move.to_col, player)
             if mill_formed:
-                print("Impi formed a mill!")
+                print("Impi got a mill")
+                self.print_board()
                 _ = self.impi_shoot_opponent_cow(player)
             
             return (True, mill_formed)
@@ -948,7 +953,8 @@ struct MorabarabaBoard:
             # check if the move formed a mill
             var mill_formed = self.is_in_mill(best_move.to_row, best_move.to_col, player)
             if mill_formed:
-                print("Impi formed a mill!")
+                print("Impi got a mill")
+                self.print_board()
                 _ = self.impi_shoot_opponent_cow(player)
             
             return (True, mill_formed)
