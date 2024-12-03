@@ -670,7 +670,7 @@ struct MorabarabaBoard:
 
     fn impi_shoot_opponent_cow(inout self, player: Int) -> Bool:
         var opponent = 3 if player == 2 else 2
-        print("Impi (player", player - 1, ") is removing a cow of player", opponent - 1)
+        print("Impi (player", player - 1, ") is shooting a cow of player", opponent - 1)
         
         var all_in_mill = True
         for row in range(7):
@@ -690,7 +690,7 @@ struct MorabarabaBoard:
                     self.board[row][col] = 1  # temporarily remove opponent's cow
                     var score = self.minimax(2, -inf[DType.float64](), inf[DType.float64](), False, player, False)
                     self.board[row][col] = opponent  # put the cow back
-                    print("Evaluated removing cow at", row, col, "with score:", score)
+                    print("evaluated shooting cow at", row, col, "with score:", score)
 
                     if score > best_score:
                         best_score = score
@@ -699,7 +699,7 @@ struct MorabarabaBoard:
         if best_move.to_row != -1:
             self.board[best_move.to_row][best_move.to_col] = 1  # remove the opponent's cow
             self.total_cows_placed[opponent - 2] -= 1  # decrement the opponent's cow count
-            print("Impi removed opponent's cow at row", best_move.to_row, "col", best_move.to_col)
+            print("Impi shot opponent's cow at row", best_move.to_row, "col", best_move.to_col)
             return True
 
         print("no valid cow to remove")
