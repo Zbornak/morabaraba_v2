@@ -48,7 +48,8 @@ fn play_game(inout game: MorabarabaBoard) raises:
         if move_successful:
             game.print_board()
             if mill_formed:
-                print("mill formed, a cow will be shot")
+                # print("mill formed, a cow will be shot")
+                pass
             current_player = impi if current_player == 2 else 2
         else:
             print("failed to make a move, trying again")
@@ -63,7 +64,7 @@ fn play_game(inout game: MorabarabaBoard) raises:
         if game.three_cow_phase:
             game.moves_since_last_shot += 1
             if game.moves_since_last_shot >= 10:
-                print("draw")
+                print("it's a draw")
                 print("thank-you for playing, hamba kahle")
                 break
 
