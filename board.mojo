@@ -820,34 +820,33 @@ struct MorabarabaBoard:
                                 moves.append(Move(from_row, from_col, to_row, to_col))
         return moves
 
-    fn minimax(inout self, depth: Int, alpha: Float64, beta: Float64, maximizing_player: Bool, player: Int, is_placing_phase: Bool) -> Float64:
+    fn minimax(inout self, depth: Int, alpha_in: Float64, beta_in: Float64, max_player: Bool, player: Int, pphase: Bool) -> Float64:
         if depth == 0 or self.check_win_condition():
             return self.evaluate_board(player)
+        
+        var opp = 3 if player == 2 else 2
+        var moves = self.impi_get_possible_placements(player if max_player else opp) if pphase else self.get_possible_moves(player if max_player else opp)
+        var alpha = alpha_in
+        var beta = beta_in
 
-        var opponent = 3 if player == 2 else 2
-
-        if is_placing_phase:
-            moves = self.impi_get_possible_placements(player if maximizing_player else opponent)
-        else:
-            moves = self.get_possible_moves(player if maximizing_player else opponent)
-        if maximizing_player:
+        if max_player:
             var max_eval = -inf[DType.float64]()
             for i in range(len(moves)):
                 var move = moves[i]
-                if is_placing_phase:
+                if pphase:
                     _ = self.place_impi_cow(move.to_row, move.to_col, player)
                 else:
                     self.make_move(move, player)
-
-                var eval = self.minimax(depth - 1, alpha, beta, False, player, is_placing_phase)
-
-                if is_placing_phase:
-                    self.impi_shoot_opponent_cow(move.to_row, move.to_col)
+                
+                var eval = self.minimax(depth - 1, alpha, beta, False, player, pphase)
+                
+                if pphase:
+                    self.board[move.to_row][move.to_col] = 1  # Set back to empty
                 else:
                     self.undo_move(move, player)
-
+                
                 max_eval = max(max_eval, eval)
-                var alpha = max(alpha, eval)
+                alpha = max(alpha, eval)
                 if beta <= alpha:
                     break
             return max_eval
@@ -855,20 +854,20 @@ struct MorabarabaBoard:
             var min_eval = inf[DType.float64]()
             for i in range(len(moves)):
                 var move = moves[i]
-                if is_placing_phase:
-                    _ = self.place_impi_cow(move.to_row, move.to_col, opponent)
+                if pphase:
+                    _ = self.place_impi_cow(move.to_row, move.to_col, opp)
                 else:
-                    self.make_move(move, opponent)
-
-                var eval = self.minimax(depth - 1, alpha, beta, True, player, is_placing_phase)
-
-                if is_placing_phase:
-                    self.impi_shoot_opponent_cow(move.to_row, move.to_col)
+                    self.make_move(move, opp)
+                
+                var eval = self.minimax(depth - 1, alpha, beta, True, player, pphase)
+                
+                if pphase:
+                    self.board[move.to_row][move.to_col] = 1  # Set back to empty
                 else:
-                    self.undo_move(move, player)
-
+                    self.undo_move(move, opp)
+                
                 min_eval = min(min_eval, eval)
-                var beta = min(beta, eval)
+                beta = min(beta, eval)
                 if beta <= alpha:
                     break
             return min_eval
