@@ -16,8 +16,8 @@ from intro import print_intro
 fn play_game(inout game: MorabarabaBoard) raises:
     game.placement_phase()
 
-    var current_player = 2  # Start with player 2
-    var impi = 3  # AI will play as player 3 (you can change this if needed)
+    var current_player = 2  # start with player 2
+    var impi = 3  # impi will play as player 3
 
     while True:
         print("player ", current_player - 1, "'s turn")
@@ -31,14 +31,14 @@ fn play_game(inout game: MorabarabaBoard) raises:
         var mill_formed: Bool
 
         if current_player == impi:
-            # AI's turn
+            # impi's turn
             if game.count_player_cows(current_player) > 3:
                 (move_successful, mill_formed) = game.impi_move(current_player)
             else:
                 print("Impi has only 3 cows left and they can now fly")
                 (move_successful, mill_formed) = game.impi_fly(current_player)
         else:
-            # Human player's turn
+            # human player's turn
             if game.count_player_cows(current_player) > 3:
                 (move_successful, mill_formed) = game.move_cow(current_player)
             else:

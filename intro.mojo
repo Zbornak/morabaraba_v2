@@ -15,6 +15,8 @@ fn print_intro():
     -------------------------------------------------------------------------------------
 
     Sawubona, izilokotho ezinhle!
+
+    You are the dark cows(⑁⚇) and will start first. Impi is controlling the light cows(⑁⚉)
     
     """)
      

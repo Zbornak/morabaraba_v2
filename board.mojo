@@ -45,7 +45,7 @@ struct MorabarabaBoard:
     var board: StaticTuple[StaticTuple[Int, 7], 7]
     var moves_since_last_shot: Int
     var three_cow_phase: Bool
-    var total_cows_placed: StaticTuple[Int, 2]  # index 0 for player 2, index 1 for player 3
+    var total_cows_placed: StaticTuple[Int, 2]  # index 0 for player 2(human), index 1 for player 3(impi)
 
     fn __init__(inout self):
         self.board = StaticTuple[StaticTuple[Int, 7], 7](
@@ -288,7 +288,7 @@ struct MorabarabaBoard:
                 continue
 
             self.board[to_row][to_col] = player
-            self.board[from_row][from_col] = 1  # set the 'from' position to empty
+            self.board[from_row][from_col] = 1  # set from position to empty
 
             var mill_formed = self.is_in_mill(to_row, to_col, player)
             if mill_formed:
@@ -383,7 +383,7 @@ struct MorabarabaBoard:
                 continue
 
             self.board[to_row][to_col] = player
-            self.board[from_row][from_col] = 1  # set the 'from' position to empty
+            self.board[from_row][from_col] = 1  # set from position to empty
 
             var mill_formed = self.is_in_mill(to_row, to_col, player)
             if mill_formed:
@@ -552,15 +552,15 @@ struct MorabarabaBoard:
     fn evaluate_placement(self, row: Int, col: Int, player: Int) -> Float64:
         var score: Float64 = 0
         
-        # Prioritize center and corner positions
+        # prioritise center and corner positions
         if (row == 3 and col == 3) or 
         (row == 0 or row == 6) and (col == 0 or col == 6):
             score += 3
         
-        # Create a temporary copy of the board
+        # create a temporary copy of the board
         var temp_board = self.board
         
-        # Make the hypothetical placement
+        # make the hypothetical placement
         var row_tuple = temp_board[row]
         var new_row = StaticTuple[Int, 7]()
         for i in range(7):
@@ -570,7 +570,7 @@ struct MorabarabaBoard:
                 new_row[i] = row_tuple[i]
         temp_board[row] = new_row
         
-        # Check for potential mills
+        # check for potential mills
         if self.is_in_mill_temp(row, col, player, temp_board):
             score += 5
         
@@ -665,7 +665,7 @@ struct MorabarabaBoard:
         for row in range(7):
             for col in range(7):
                 if self.is_valid_position(row, col) and self.board[row][col] == 1:  # assuming 1 represents an empty spot
-                    placements.append(Move(-1, -1, row, col))  # use -1, -1 for 'from' position as it's not applicable for placement
+                    placements.append(Move(-1, -1, row, col))  # use -1, -1 for from position as it's not applicable for placement
         return placements
 
     fn impi_shoot_opponent_cow(inout self, player: Int) -> Bool:
@@ -841,7 +841,7 @@ struct MorabarabaBoard:
                 var eval = self.minimax(depth - 1, alpha, beta, False, player, pphase)
                 
                 if pphase:
-                    self.board[move.to_row][move.to_col] = 1  # Set back to empty
+                    self.board[move.to_row][move.to_col] = 1  # set back to empty
                 else:
                     self.undo_move(move, player)
                 
@@ -862,7 +862,7 @@ struct MorabarabaBoard:
                 var eval = self.minimax(depth - 1, alpha, beta, True, player, pphase)
                 
                 if pphase:
-                    self.board[move.to_row][move.to_col] = 1  # Set back to empty
+                    self.board[move.to_row][move.to_col] = 1  # set back to empty
                 else:
                     self.undo_move(move, opp)
                 
