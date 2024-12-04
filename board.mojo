@@ -416,11 +416,6 @@ struct MorabarabaBoard:
         
         while True:
             var input_str = self.get_input()
-
-            if input_str.lower() == "cancel":
-                print("shooting cancelled.")
-                return False
-
             var input_parts = input_str.split()
             
             if len(input_parts) != 2:
@@ -495,7 +490,8 @@ struct MorabarabaBoard:
             if placement_successful:
                 self.print_board()
                 if mill_formed:
-                    print("mill formed, a cow will be shot.")
+                    # print("mill formed, a cow will be shot.")
+                    pass
                 current_player = ai_player if current_player == 2 else 2
             else:
                 print("Failed to place cow, trying again...")
